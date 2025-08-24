@@ -25,74 +25,91 @@ export const registerSchema = z
   });
 
 /**
- * Transaction schema
+ * Password recovery schema
  */
-export const transactionSchema = z.object({
+export const recoverySchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
+/**
+ * Reset password schema
+ */
+export const resetPasswordSchema = z
+  .object({
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+    token: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
+const transactionCategoryEnum = z.enum([
+  "FOOD",
+  "TRANSPORT",
+  "ENTERTAINMENT",
+  "UTILITIES",
+  "HEALTH",
+  "EDUCATION",
+  "DEBTS",
+  "SALARY",
+  "FREELANCE",
+  "INVESTMENTS",
+  "OTHER",
+]);
+
+const transactionSchema = z.object({
   id: z.string().optional(),
-  amount: z.number().positive("Amount must be positive"),
   description: z.string().min(1, "Description is required"),
-  category: z.string().min(1, "Category is required"),
-  type: z.enum(["income", "expense"]),
+  type: z.union([z.literal("INCOME"), z.literal("EXPENSE")]),
+  amount: z.number().positive("Amount must be positive"),
+  category: transactionCategoryEnum,
   date: z.date(),
   accountId: z.string().min(1, "Account is required"),
+  userId: z.string().optional(),
 });
 
-/**
- * Account schema
- */
-export const accountSchema = z.object({
-  id: z.string().optional(),
-  name: z.string().min(1, "Account name is required"),
-  type: z.enum(["checking", "savings", "credit", "investment"]),
-  balance: z.number(),
-  currency: z.string().default("USD"),
-  color: z.string().optional(),
+const createTransactionSchema = transactionSchema.omit({
+  id: true,
+  userId: true,
 });
 
-/**
- * Budget schema
- */
-export const budgetSchema = z.object({
-  id: z.string().optional(),
-  name: z.string().min(1, "Budget name is required"),
-  amount: z.number().positive("Budget amount must be positive"),
-  category: z.string().min(1, "Category is required"),
-  period: z.enum(["monthly", "yearly"]),
-  startDate: z.date(),
-  endDate: z.date().optional(),
+const updateTransactionSchema = transactionSchema.partial().extend({
+  id: z.string(),
 });
 
-/**
- * Investment schema
- */
-export const investmentSchema = z.object({
-  id: z.string().optional(),
-  symbol: z.string().min(1, "Symbol is required"),
-  name: z.string().min(1, "Investment name is required"),
-  shares: z.number().positive("Shares must be positive"),
-  purchasePrice: z.number().positive("Purchase price must be positive"),
-  purchaseDate: z.date(),
-  accountId: z.string().min(1, "Account is required"),
+const paginatedTransactionsSchema = z.object({
+  transactions: z.array(transactionSchema),
+  total: z.number(),
+  page: z.number(),
+  limit: z.number(),
+  totalPages: z.number(),
 });
 
-/**
- * Goal schema
- */
-export const goalSchema = z.object({
-  id: z.string().optional(),
-  name: z.string().min(1, "Goal name is required"),
-  targetAmount: z.number().positive("Target amount must be positive"),
-  currentAmount: z.number().min(0, "Current amount cannot be negative"),
-  targetDate: z.date(),
-  category: z.string().min(1, "Category is required"),
-  priority: z.enum(["low", "medium", "high"]).default("medium"),
-});
+// Type definitions
+type AuthData = z.infer<typeof authSchema>;
+type RegisterData = z.infer<typeof registerSchema>;
+type RecoveryData = z.infer<typeof recoverySchema>;
+type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
+type Transaction = z.infer<typeof transactionSchema>;
+type CreateTransaction = z.infer<typeof createTransactionSchema>;
+type UpdateTransaction = z.infer<typeof updateTransactionSchema>;
+type PaginatedTransactions = z.infer<typeof paginatedTransactionsSchema>;
+type TransactionCategory = z.infer<typeof transactionCategoryEnum>;
 
-// Type exports
-export type AuthData = z.infer<typeof authSchema>;
-export type RegisterData = z.infer<typeof registerSchema>;
-export type Transaction = z.infer<typeof transactionSchema>;
-export type Account = z.infer<typeof accountSchema>;
-export type Budget = z.infer<typeof budgetSchema>;
-export type Investment = z.infer<typeof investmentSchema>;
-export type Goal = z.infer<typeof goalSchema>;
+export {
+  type AuthData,
+  type RegisterData,
+  type RecoveryData,
+  type ResetPasswordData,
+  type Transaction,
+  type CreateTransaction,
+  type UpdateTransaction,
+  type PaginatedTransactions,
+  type TransactionCategory,
+  transactionSchema,
+  createTransactionSchema,
+  updateTransactionSchema,
+  paginatedTransactionsSchema,
+};

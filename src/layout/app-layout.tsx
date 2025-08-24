@@ -1,15 +1,19 @@
 "use client";
 
 import { Sidebar } from "@/layout/sidebar";
-import { TopBar } from "@/layout/top-bar";
-import { useAppStore } from "@/lib/store";
 import { PropsWithChildren, useState } from "react";
 
 type Props = Readonly<PropsWithChildren>;
 
 export function AppLayout({ children }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { user } = useAppStore();
+  const user = {
+    id: "123",
+    email: "john.doe@email.com",
+    firstName: "John",
+    lastName: "Doe",
+    isAuthenticated: true,
+  };
 
   return (
     <div className="min-h-screen bg-background flex">

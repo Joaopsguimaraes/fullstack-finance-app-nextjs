@@ -7,48 +7,53 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useAppStore } from "@/lib/store";
-import { useStore } from "@/store";
+import { useDeleteTransaction } from "@/features/transactions/hooks/use-transactions";
+import { useTransactionForm } from "@/features/transactions/hooks/use-transaction-form";
+import type { Transaction } from "@/lib/schemas";
 
-export function DialogDeleteTransaction() {
-  const { deleteTransaction } = useAppStore();
-  const setDeleteDialog = useStore.use.setDeleteDialog();
-  const deleteDialog = useStore.use.deleteDialog();
+interface DialogDeleteTransactionProps {
+  readonly isOpen: boolean;
+  readonly transaction: Transaction | null;
+}
 
-  const confirmDelete = () => {
-    if (deleteDialog.transaction?.id) {
-      deleteTransaction(deleteDialog.transaction.id);
-      setDeleteDialog({ isOpen: false, transaction: null });
+export function DialogDeleteTransaction({
+  isOpen,
+  transaction,
+}: DialogDeleteTransactionProps) {
+  const { closeDeleteDialog } = useTransactionForm();
+  const deleteTransaction = useDeleteTransaction();
+
+  const confirmDelete = async () => {
+    if (transaction?.id) {
+      try {
+        await deleteTransaction.mutateAsync(transaction.id);
+        closeDeleteDialog();
+      } catch (error) {
+        console.error("Error deleting transaction:", error);
+      }
     }
   };
 
   return (
-    <Dialog
-      open={deleteDialog.isOpen}
-      onOpenChange={(open) =>
-        setDeleteDialog({ isOpen: open, transaction: null })
-      }
-    >
+    <Dialog open={isOpen} onOpenChange={closeDeleteDialog}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Delete Transaction</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete "
-            {deleteDialog.transaction?.description}"? This action cannot be
-            undone.
+            Are you sure you want to delete {transaction?.description}? This
+            action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() =>
-              setDeleteDialog({ isOpen: false, transaction: null })
-            }
-          >
+          <Button variant="outline" onClick={closeDeleteDialog}>
             Cancel
           </Button>
-          <Button variant="destructive" onClick={confirmDelete}>
-            Delete
+          <Button
+            variant="destructive"
+            onClick={confirmDelete}
+            disabled={deleteTransaction.isPending}
+          >
+            {deleteTransaction.isPending ? "Deleting..." : "Delete"}
           </Button>
         </DialogFooter>
       </DialogContent>

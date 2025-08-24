@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { useAppStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { LogOut, X } from "lucide-react";
 import { navigationItems } from "./navigation-items";
@@ -11,10 +10,9 @@ interface SidebarProps {
 }
 
 export function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarProps) {
-  const { logout } = useAppStore();
-
   const handleLogout = () => {
-    logout();
+    // Implement logout logic here
+    console.log("Logging out...");
   };
 
   return (

@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  output   = "./generated/prisma"
 }
 
 datasource db {
@@ -8,18 +8,73 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
 model User {
-  id            String        @id @default(uuid())
-  email         String        @unique
-  password      String
+  id            String    @id @default(cuid())
   name          String?
-  refreshTokens String[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  accounts      Account[]
-  transactions  Transaction[]
+  email         String?   @unique
+  emailVerified DateTime? @map("email_verified")
+  image         String?
+  password      String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  accounts Account[]
+  sessions Session[]
+  transactions Transaction[]
+  userAccounts UserAccount[]
 
   @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model UserAccount {
+  id           String      @id @default(uuid())
+  name         String
+  type         AccountType
+  balance      Float       @default(0)
+  userId       String      @map("user_id")
+  user         User        @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+
+  @@map("user_accounts")
 }
 
 enum AccountType {
@@ -27,18 +82,6 @@ enum AccountType {
   SAVINGS
   CREDIT
   INVESTMENT
-}
-
-model Account {
-  id           String        @id @default(uuid())
-  name         String
-  type         AccountType
-  balance      Float         @default(0)
-  userId       String        @map("user_id")
-  user         User          @relation(fields: [userId], references: [id])
-  transactions Transaction[]
-
-  @@map("accounts")
 }
 
 enum TransactionCategory {
@@ -58,13 +101,15 @@ enum TransactionCategory {
 model Transaction {
   id          String              @id @default(uuid())
   description String
-  type        String // "income" or "expense"
+  type        String // "INCOME" or "EXPENSE"
   amount      Float
   category    TransactionCategory
   date        DateTime            @default(now())
   accountId   String              @map("account_id")
   userId      String              @map("user_id")
 
-  user    User    @relation(fields: [userId], references: [id])
-  account Account @relation(fields: [accountId], references: [id])
+  user    User        @relation(fields: [userId], references: [id])
+  account UserAccount @relation(fields: [accountId], references: [id])
+
+  @@map("transactions")
 }

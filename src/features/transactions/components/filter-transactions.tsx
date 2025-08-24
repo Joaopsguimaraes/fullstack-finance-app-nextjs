@@ -6,18 +6,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useStore } from "@/store";
+import { useTransactionFilters } from "@/features/transactions/hooks/use-transaction-filters";
 import { Filter, Search } from "lucide-react";
 import { useMemo } from "react";
 import { categoriesOptions } from "../constants/categories";
 
 export function FilterTransactions() {
-  const searchQuery = useStore.use.searchQuery();
-  const typeFilter = useStore.use.typeFilter();
-  const categoryFilter = useStore.use.categoryFilter();
-  const setSearchQuery = useStore.use.setSearchQuery();
-  const setTypeFilter = useStore.use.setTypeFilter();
-  const setCategoryFilter = useStore.use.setCategoryFilter();
+  const { filters, setFilter } = useTransactionFilters();
 
   const transactionsType = useMemo(
     () => new Set(["all", "income", "expense"]),
@@ -30,12 +25,15 @@ export function FilterTransactions() {
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="Search transactions..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          value={filters.search}
+          onChange={(e) => setFilter("search", e.target.value)}
           className="pl-10"
         />
       </div>
-      <Select value={typeFilter} onValueChange={setTypeFilter}>
+      <Select
+        value={filters.type}
+        onValueChange={(value) => setFilter("type", value)}
+      >
         <SelectTrigger className="w-full sm:w-[180px]">
           <Filter className="h-4 w-4 mr-2" />
           <SelectValue placeholder="Filter by type" />
@@ -48,7 +46,10 @@ export function FilterTransactions() {
           ))}
         </SelectContent>
       </Select>
-      <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+      <Select
+        value={filters.category}
+        onValueChange={(value) => setFilter("category", value)}
+      >
         <SelectTrigger className="w-full sm:w-[180px]">
           <SelectValue placeholder="Filter by category" />
         </SelectTrigger>
