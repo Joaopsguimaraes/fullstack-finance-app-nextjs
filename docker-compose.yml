@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: finance_app_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: finance_app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - finance_app_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  finance_app_network:
+    driver: bridge
