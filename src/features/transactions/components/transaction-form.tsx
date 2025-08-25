@@ -17,39 +17,28 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
   createTransactionSchema,
-  type Transaction,
   type CreateTransaction,
 } from "@/lib/schemas";
-import {
-  useCreateTransaction,
-  useUpdateTransaction,
-} from "@/features/transactions/hooks/use-transactions";
+
 import { useTransactionForm } from "@/features/transactions/hooks/use-transaction-form";
 import { formatCurrency } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Calendar, DollarSign, FileText, Tag } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-
-const transactionCategories = [
-  "FOOD",
-  "TRANSPORT",
-  "ENTERTAINMENT",
-  "UTILITIES",
-  "HEALTH",
-  "EDUCATION",
-  "DEBTS",
-  "SALARY",
-  "FREELANCE",
-  "INVESTMENTS",
-  "OTHER",
-];
-
-const transactionTypes = [
-  { value: "income", label: "Income" },
-  { value: "expense", label: "Expense" },
-];
+import { useCreateTransaction } from "../hooks/use-create-transaction";
+import { useUpdateTransaction } from "../hooks/use-update-transaction";
+import { transactionTypes } from "../constants/transaction-type";
+import { categoriesOptions } from "../constants/categories";
 
 const mockAccounts = [
   { id: "1", name: "Checking Account", balance: 0, type: "CHECKING" },
@@ -57,24 +46,14 @@ const mockAccounts = [
 ];
 
 export function TransactionForm() {
-
   const [isLoading, setIsLoading] = useState(false);
-  const {formState, closeForm } = useTransactionForm();
+  const { formState, closeForm } = useTransactionForm();
   const createTransaction = useCreateTransaction();
   const updateTransaction = useUpdateTransaction();
+  const { editingTransaction, isFormOpen: isOpen } = formState;
+  const mode = editingTransaction ? "edit" : "create";
 
-  const { editingTransaction, isFormOpen: isOpen } = formState
-  const mode = editingTransaction ? 'edit' : 'create'
-
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setValue,
-    watch,
-  } = useForm<CreateTransaction>({
+  const form = useForm<CreateTransaction>({
     resolver: zodResolver(createTransactionSchema),
     defaultValues: {
       amount: 0,
@@ -89,7 +68,7 @@ export function TransactionForm() {
   // Reset form when editing transaction changes
   useEffect(() => {
     if (editingTransaction) {
-      reset({
+      form.reset({
         amount: editingTransaction.amount,
         description: editingTransaction.description,
         category: editingTransaction.category,
@@ -98,7 +77,7 @@ export function TransactionForm() {
         accountId: editingTransaction.accountId,
       });
     } else {
-      reset({
+      form.reset({
         amount: 0,
         description: "",
         category: "OTHER",
@@ -107,13 +86,11 @@ export function TransactionForm() {
         accountId: mockAccounts[0]?.id || "",
       });
     }
-  }, [editingTransaction, reset]);
+  }, [editingTransaction, form]);
 
   const onClose = () => {
     closeForm();
   };
-
-  const watchedType = watch("type");
 
   const onSubmit = async (data: CreateTransaction) => {
     setIsLoading(true);
@@ -126,7 +103,7 @@ export function TransactionForm() {
           data: { ...data, id: editingTransaction.id },
         });
       }
-      reset();
+      form.reset();
       onClose();
     } catch (error) {
       console.error("Error saving transaction:", error);
@@ -136,7 +113,7 @@ export function TransactionForm() {
   };
 
   const handleClose = () => {
-    reset();
+    form.reset();
     onClose();
   };
 
@@ -148,168 +125,178 @@ export function TransactionForm() {
             {mode === "create" ? "Add Transaction" : "Edit Transaction"}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Type</label>
-            <Select
-              value={watchedType}
-              onValueChange={(value) =>
-                setValue("type", value as "INCOME" | "EXPENSE")
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select transaction type" />
-              </SelectTrigger>
-              <SelectContent>
-                {transactionTypes.map((type) => (
-                  <SelectItem key={type.value} value={type.value}>
-                    {type.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.type && (
-              <p className="text-sm text-destructive">{errors.type.message}</p>
-            )}
-          </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Type</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select transaction type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {transactionTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Amount */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Amount</label>
-            <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                {...register("amount", { valueAsNumber: true })}
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="0.00"
-                className="pl-10"
-              />
-            </div>
-            {errors.amount && (
-              <p className="text-sm text-destructive">
-                {errors.amount.message}
-              </p>
-            )}
-          </div>
+            <FormField
+              control={form.control}
+              name="amount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Amount</FormLabel>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        className="pl-10"
+                        {...field}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Description */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Description</label>
-            <div className="relative">
-              <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                {...register("description")}
-                placeholder="Enter description"
-                className="pl-10"
-              />
-            </div>
-            {errors.description && (
-              <p className="text-sm text-destructive">
-                {errors.description.message}
-              </p>
-            )}
-          </div>
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <div className="relative">
+                    <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <FormControl>
+                      <Input
+                        placeholder="Enter description"
+                        className="pl-10"
+                        {...field}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Category */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Category</label>
-            <div className="relative">
-              <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Select
-                value={watch("category")}
-                onValueChange={(value) =>
-                  setValue(
-                    "category",
-                    value as
-                      | "FOOD"
-                      | "TRANSPORT"
-                      | "ENTERTAINMENT"
-                      | "UTILITIES"
-                      | "HEALTH"
-                      | "EDUCATION"
-                      | "DEBTS"
-                      | "SALARY"
-                      | "FREELANCE"
-                      | "INVESTMENTS"
-                      | "OTHER"
-                  )
-                }
-              >
-                <SelectTrigger className="pl-10">
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {transactionCategories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {errors.category && (
-              <p className="text-sm text-destructive">
-                {errors.category.message}
-              </p>
-            )}
-          </div>
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <div className="relative">
+                    <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="pl-10">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categoriesOptions.map((category) => (
+                          <SelectItem key={category.value} value={category.value}>
+                            {category.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Account */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Account</label>
-            <Select
-              value={watch("accountId")}
-              onValueChange={(value) => setValue("accountId", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select account" />
-              </SelectTrigger>
-              <SelectContent>
-                {mockAccounts.map((account) => (
-                  <SelectItem key={account.id} value={account.id}>
-                    {account.name} ({formatCurrency(account.balance)})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.accountId && (
-              <p className="text-sm text-destructive">
-                {errors.accountId.message}
-              </p>
-            )}
-          </div>
+            <FormField
+              control={form.control}
+              name="accountId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Account</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select account" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {mockAccounts.map((account) => (
+                        <SelectItem key={account.id} value={account.id}>
+                          {account.name} ({formatCurrency(account.balance)})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Date */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Date</label>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                {...register("date", { valueAsDate: true })}
-                type="date"
-                className="pl-10"
-              />
-            </div>
-            {errors.date && (
-              <p className="text-sm text-destructive">{errors.date.message}</p>
-            )}
-          </div>
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Date</FormLabel>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <FormControl>
+                      <Input
+                        type="date"
+                        className="pl-10"
+                        {...field}
+                        value={field.value instanceof Date ? field.value.toISOString().split('T')[0] : field.value}
+                        onChange={(e) => field.onChange(new Date(e.target.value))}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading
-                ? "Saving..."
-                : mode === "create"
-                ? "Add Transaction"
-                : "Update Transaction"}
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={handleClose}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading
+                  ? "Saving..."
+                  : mode === "create"
+                  ? "Add Transaction"
+                  : "Update Transaction"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

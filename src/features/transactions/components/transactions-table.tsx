@@ -12,7 +12,7 @@ import {
 import type { Transaction } from "@/lib/schemas";
 import { formatCurrency } from "@/lib/utils";
 import { useTransactionForm } from "@/features/transactions/hooks/use-transaction-form";
-import { useTransactions } from "@/features/transactions/hooks/use-transactions";
+import { useListTransactions } from "@/features/transactions/hooks/use-list-transactions";
 import { useTransactionFilters } from "@/features/transactions/hooks/use-transaction-filters";
 import { format } from "date-fns";
 import { Edit, Trash2, ArrowDownRight, ArrowUpRight } from "lucide-react";
@@ -27,7 +27,7 @@ const mockAccounts = [
 
 export function TransactionsTable() {
   const { filters } = useTransactionFilters();
-  const { data, isLoading, error } = useTransactions(filters);
+  const { data, isLoading, error } = useListTransactions(filters);
   const { openEditForm, openDeleteDialog } = useTransactionForm();
 
   const getAccountName = (accountId: string) => {

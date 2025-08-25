@@ -1,12 +1,12 @@
 'use client'
 
 import { formatCurrency } from "@/lib/utils";
-import { useTransactions } from "@/features/transactions/hooks/use-transactions";
+import { useListTransactions } from "@/features/transactions/hooks/use-list-transactions";
 import { useTransactionFilters } from "@/features/transactions/hooks/use-transaction-filters";
 
 export function ResultsSummary() {
   const { filters } = useTransactionFilters();
-  const { data, isLoading } = useTransactions(filters);
+  const { data, isLoading } = useListTransactions(filters);
 
   if (isLoading || !data) {
     return (

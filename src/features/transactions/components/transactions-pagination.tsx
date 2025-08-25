@@ -7,11 +7,11 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useTransactionFilters } from "@/features/transactions/hooks/use-transaction-filters";
-import { useTransactions } from "@/features/transactions/hooks/use-transactions";
+import { useListTransactions } from "@/features/transactions/hooks/use-list-transactions";
 
 export function TransactionsPagination() {
   const { filters, setFilter } = useTransactionFilters();
-  const { data } = useTransactions(filters);
+  const { data } = useListTransactions(filters);
 
   if (!data || data.totalPages <= 1) {
     return null;

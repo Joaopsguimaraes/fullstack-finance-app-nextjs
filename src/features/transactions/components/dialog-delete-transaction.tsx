@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useDeleteTransaction } from "@/features/transactions/hooks/use-transactions";
+import { useDeleteTransaction } from "@/features/transactions/hooks/use-delete-transaction";
 import { useTransactionForm } from "@/features/transactions/hooks/use-transaction-form";
 
 export function DialogDeleteTransaction() {
