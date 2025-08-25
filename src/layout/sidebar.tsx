@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { LogOut, X } from "lucide-react";
 import { navigationItems } from "./navigation-items";
+import { memo, useCallback } from "react";
 
 interface SidebarProps {
   readonly sidebarOpen: boolean;
@@ -9,11 +10,15 @@ interface SidebarProps {
   readonly user: User;
 }
 
-export function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarProps) {
-  const handleLogout = () => {
+export const Sidebar = memo(function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarProps) {
+  const handleLogout = useCallback(() => {
     // Implement logout logic here
     console.log("Logging out...");
-  };
+  }, []);
+
+  const handleCloseSidebar = useCallback(() => {
+    setSidebarOpen(false);
+  }, [setSidebarOpen]);
 
   return (
     <div
@@ -30,7 +35,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarProps) {
             variant="ghost"
             size="icon"
             className="lg:hidden"
-            onClick={() => setSidebarOpen(false)}
+            onClick={handleCloseSidebar}
           >
             <X className="h-5 w-5" />
           </Button>
@@ -85,4 +90,4 @@ export function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarProps) {
       </div>
     </div>
   );
-}
+});

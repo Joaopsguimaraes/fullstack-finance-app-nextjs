@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,19 +11,12 @@ import {
 } from "@/components/ui/dialog";
 import { useDeleteTransaction } from "@/features/transactions/hooks/use-transactions";
 import { useTransactionForm } from "@/features/transactions/hooks/use-transaction-form";
-import type { Transaction } from "@/lib/schemas";
 
-interface DialogDeleteTransactionProps {
-  readonly isOpen: boolean;
-  readonly transaction: Transaction | null;
-}
-
-export function DialogDeleteTransaction({
-  isOpen,
-  transaction,
-}: DialogDeleteTransactionProps) {
-  const { closeDeleteDialog } = useTransactionForm();
+export function DialogDeleteTransaction() {
+  const { closeDeleteDialog, formState } = useTransactionForm();
   const deleteTransaction = useDeleteTransaction();
+
+  const { deleteDialog: { transaction, isOpen }} = formState
 
   const confirmDelete = async () => {
     if (transaction?.id) {

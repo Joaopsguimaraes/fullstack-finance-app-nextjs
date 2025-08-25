@@ -1,3 +1,5 @@
+'use client'
+
 import { formatCurrency } from "@/lib/utils";
 import { useTransactions } from "@/features/transactions/hooks/use-transactions";
 import { useTransactionFilters } from "@/features/transactions/hooks/use-transaction-filters";

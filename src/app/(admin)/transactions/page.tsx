@@ -1,44 +1,35 @@
-"use client";
+import { Suspense } from "react";
+import dynamic from "next/dynamic";
+import { Card, CardContent } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
-import { TransactionForm } from "@/features/transactions/components/transaction-form";
-import { Button } from "@/components/ui/button";
-import { DialogDeleteTransaction } from "@/features/transactions/components/dialog-delete-transaction";
-import { FilterTransactions } from "@/features/transactions/components/filter-transactions";
-import { ResultsSummary } from "@/features/transactions/components/results-summary";
-import { TransactionsTable } from "@/features/transactions/components/transactions-table";
-import { useTransactionForm } from "@/features/transactions/hooks/use-transaction-form";
-import { Plus } from "lucide-react";
+const Transactions = dynamic(
+  () => import("@/features/transactions/components/transactions").then(mod => ({ default: mod.Transactions })),
+  {
+    loading: () => (
+      <Card className="w-full shadow-lg">
+        <CardContent className="flex items-center justify-center py-8">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span className="ml-2">Loading transactions...</span>
+        </CardContent>
+      </Card>
+    ),
+  }
+);
 
 export default function TransactionsPage() {
-  const { formState, openCreateForm } = useTransactionForm();
-
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Transactions</h1>
-          <p className="text-muted-foreground">
-            Manage your income and expenses
-          </p>
-        </div>
-        <Button onClick={openCreateForm}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Transaction
-        </Button>
-      </div>
-
-      <FilterTransactions />
-      <ResultsSummary />
-      <TransactionsTable />
-      <TransactionForm
-        mode={formState.editingTransaction ? "edit" : "create"}
-        isOpen={formState.isFormOpen}
-        editingTransaction={formState.editingTransaction}
-      />
-      <DialogDeleteTransaction
-        isOpen={formState.deleteDialog.isOpen}
-        transaction={formState.deleteDialog.transaction}
-      />
-    </div>
+    <Suspense 
+      fallback={
+        <Card className="w-full shadow-lg">
+          <CardContent className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <span className="ml-2">Loading transactions...</span>
+          </CardContent>
+        </Card>
+      }
+    >
+      <Transactions />
+    </Suspense>
   );
 }

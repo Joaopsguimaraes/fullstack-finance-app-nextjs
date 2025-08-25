@@ -87,7 +87,7 @@ export const useTransactionFilters = () => {
   );
 
   // Set multiple filters at once
-  const setFilters = useCallback(
+  const setMultipleFilters = useCallback(
     (filters: Partial<TransactionFilters>) => {
       updateFilters(filters);
     },
@@ -97,7 +97,7 @@ export const useTransactionFilters = () => {
   return {
     filters: currentFilters,
     setFilter,
-    setFilters,
+    setFilters: setMultipleFilters,
     resetFilters,
     updateFilters,
   };

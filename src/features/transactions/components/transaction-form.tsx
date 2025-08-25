@@ -32,12 +32,6 @@ import { Calendar, DollarSign, FileText, Tag } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
-interface TransactionFormProps {
-  readonly mode: "create" | "edit";
-  readonly isOpen: boolean;
-  readonly editingTransaction: Transaction | null;
-}
-
 const transactionCategories = [
   "FOOD",
   "TRANSPORT",
@@ -62,15 +56,16 @@ const mockAccounts = [
   { id: "2", name: "Savings Account", balance: 0, type: "SAVINGS" },
 ];
 
-export function TransactionForm({
-  mode,
-  isOpen,
-  editingTransaction,
-}: TransactionFormProps) {
+export function TransactionForm() {
+
   const [isLoading, setIsLoading] = useState(false);
-  const { closeForm } = useTransactionForm();
+  const {formState, closeForm } = useTransactionForm();
   const createTransaction = useCreateTransaction();
   const updateTransaction = useUpdateTransaction();
+
+  const { editingTransaction, isFormOpen: isOpen } = formState
+  const mode = editingTransaction ? 'edit' : 'create'
+
 
   const {
     register,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ type ResetPasswordForm = {
   confirmPassword: string;
 };
 
-function ResetPasswordContent() {
+export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -37,34 +37,34 @@ function ResetPasswordContent() {
     resolver: zodResolver(resetPasswordSchema.omit({ token: true })),
   });
 
-  useEffect(() => {
-    const checkToken = async () => {
-      if (!token) {
-        setIsValidToken(false);
-        setIsCheckingToken(false);
-        return;
-      }
+  const checkToken = useCallback(async () => {
+    if (!token) {
+      setIsValidToken(false);
+      setIsCheckingToken(false);
+      return;
+    }
 
-      try {
-        const response = await fetch(`/api/auth/verify-token?token=${token}`);
-        const result = await response.json();
-        
-        if (result.valid) {
-          setIsValidToken(true);
-        } else {
-          setIsValidToken(false);
-        }
-      } catch {
+    try {
+      const response = await fetch(`/api/auth/verify-token?token=${token}`);
+      const result = await response.json();
+      
+      if (result.valid) {
+        setIsValidToken(true);
+      } else {
         setIsValidToken(false);
-      } finally {
-        setIsCheckingToken(false);
       }
-    };
-
-    checkToken();
+    } catch {
+      setIsValidToken(false);
+    } finally {
+      setIsCheckingToken(false);
+    }
   }, [token]);
 
-  const onSubmit = async (data: ResetPasswordForm) => {
+  useEffect(() => {
+    checkToken();
+  }, [checkToken]);
+
+  const onSubmit = useCallback(async (data: ResetPasswordForm) => {
     if (!token) {
       toast.error("Invalid reset token");
       return;
@@ -88,52 +88,68 @@ function ResetPasswordContent() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [token, resetPassword, router]);
+
+  const togglePasswordVisibility = useCallback(() => {
+    setShowPassword(!showPassword);
+  }, [showPassword]);
+
+  const toggleConfirmPasswordVisibility = useCallback(() => {
+    setShowConfirmPassword(!showConfirmPassword);
+  }, [showConfirmPassword]);
+
+  const handleRequestNewLink = useCallback(() => {
+    router.push("/auth/recovery");
+  }, [router]);
+
+  const loadingFallback = useMemo(() => (
+    <Card className="w-full shadow-lg">
+      <CardContent className="flex items-center justify-center py-8">
+        <Loader2 className="h-6 w-6 animate-spin" />
+        <span className="ml-2">Verifying reset token...</span>
+      </CardContent>
+    </Card>
+  ), []);
+
+  const invalidTokenFallback = useMemo(() => (
+    <Card className="w-full shadow-lg">
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl font-bold text-center text-red-600">
+          Invalid Reset Link
+        </CardTitle>
+        <CardDescription className="text-center">
+          This password reset link is invalid or has expired. Please request a new one.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <Button
+            onClick={handleRequestNewLink}
+            className="w-full"
+          >
+            Request new reset link
+          </Button>
+
+          <div className="text-center">
+            <Link
+              href="/auth/signin"
+              className="text-sm text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center"
+            >
+              <ArrowLeft className="mr-1 h-4 w-4" />
+              Back to sign in
+            </Link>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  ), [handleRequestNewLink]);
 
   if (isCheckingToken) {
-    return (
-      <Card className="w-full shadow-lg">
-        <CardContent className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin" />
-          <span className="ml-2">Verifying reset token...</span>
-        </CardContent>
-      </Card>
-    );
+    return loadingFallback;
   }
 
   if (!isValidToken) {
-    return (
-      <Card className="w-full shadow-lg">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center text-red-600">
-            Invalid Reset Link
-          </CardTitle>
-          <CardDescription className="text-center">
-            This password reset link is invalid or has expired. Please request a new one.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <Button
-              onClick={() => router.push("/auth/recovery")}
-              className="w-full"
-            >
-              Request new reset link
-            </Button>
-
-            <div className="text-center">
-              <Link
-                href="/auth/signin"
-                className="text-sm text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center"
-              >
-                <ArrowLeft className="mr-1 h-4 w-4" />
-                Back to sign in
-              </Link>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return invalidTokenFallback;
   }
 
   return (
@@ -165,7 +181,7 @@ function ResetPasswordContent() {
                 variant="ghost"
                 size="sm"
                 className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={togglePasswordVisibility}
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4" />
@@ -196,7 +212,7 @@ function ResetPasswordContent() {
                 variant="ghost"
                 size="sm"
                 className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                onClick={toggleConfirmPasswordVisibility}
               >
                 {showConfirmPassword ? (
                   <EyeOff className="h-4 w-4" />
@@ -237,20 +253,5 @@ function ResetPasswordContent() {
         </div>
       </CardContent>
     </Card>
-  );
-}
-
-export default function ResetPasswordPage() {
-  return (
-    <Suspense fallback={
-      <Card className="w-full shadow-lg">
-        <CardContent className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin" />
-          <span className="ml-2">Loading...</span>
-        </CardContent>
-      </Card>
-    }>
-      <ResetPasswordContent />
-    </Suspense>
   );
 }
