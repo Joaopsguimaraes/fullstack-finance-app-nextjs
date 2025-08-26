@@ -12,7 +12,6 @@ interface SidebarProps {
 
 export const Sidebar = memo(function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarProps) {
   const handleLogout = useCallback(() => {
-    // Implement logout logic here
     console.log("Logging out...");
   }, []);
 
@@ -50,7 +49,7 @@ export const Sidebar = memo(function Sidebar({ sidebarOpen, setSidebarOpen, user
                 {user.lastName?.[0]}
               </span>
             </div>
-            <div>
+            <div className="flex-1">
               <p className="font-medium">
                 {user.firstName} {user.lastName}
               </p>

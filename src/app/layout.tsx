@@ -1,19 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Inter } from "next/font/google";
 import { QueryProvider } from "@/providers/query-provider";
 import { SessionProvider } from "@/providers/session-provider";
 import { SonnerProvider } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 import "./globals.css";
 
-const geistSans = Geist({
+const interSans = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Finance App - Take Control of Your Finances",
@@ -27,16 +24,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${interSans.variable} antialiased`}
       >
-        <SessionProvider>
-          <QueryProvider>
-            {children}
-            <SonnerProvider />
-          </QueryProvider>
-        </SessionProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SessionProvider>
+            <QueryProvider>
+              {children}
+              <SonnerProvider />
+            </QueryProvider>
+          </SessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
