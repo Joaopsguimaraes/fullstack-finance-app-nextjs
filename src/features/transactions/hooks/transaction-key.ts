@@ -1,3 +1,4 @@
+// transaction keys used with React Query and cache management
 export const transactionKeys = {
   all: ["transactions"] as const,
   lists: () => [...transactionKeys.all, "list"] as const,
@@ -6,3 +7,4 @@ export const transactionKeys = {
   details: () => [...transactionKeys.all, "detail"] as const,
   detail: (id: string) => [...transactionKeys.details(), id] as const,
 };
+

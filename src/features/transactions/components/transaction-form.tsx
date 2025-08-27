@@ -24,11 +24,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  createTransactionSchema,
-  type CreateTransaction,
-} from "@/lib/schemas";
-
+import { createTransactionSchema, type CreateTransaction } from "@/lib/schemas";
 import { useTransactionForm } from "@/features/transactions/hooks/use-transaction-form";
 import { formatCurrency } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -46,7 +42,7 @@ const mockAccounts = [
 ];
 
 export function TransactionForm() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { formState, closeForm } = useTransactionForm();
   const createTransaction = useCreateTransaction();
   const updateTransaction = useUpdateTransaction();
@@ -56,7 +52,7 @@ export function TransactionForm() {
   const form = useForm<CreateTransaction>({
     resolver: zodResolver(createTransactionSchema),
     defaultValues: {
-      amount: 0,
+      amount: "",
       description: "",
       category: "OTHER",
       type: "EXPENSE",
@@ -65,31 +61,13 @@ export function TransactionForm() {
     },
   });
 
-  // Reset form when editing transaction changes
-  useEffect(() => {
-    if (editingTransaction) {
-      form.reset({
-        amount: editingTransaction.amount,
-        description: editingTransaction.description,
-        category: editingTransaction.category,
-        type: editingTransaction.type,
-        date: new Date(editingTransaction.date),
-        accountId: editingTransaction.accountId,
-      });
-    } else {
-      form.reset({
-        amount: 0,
-        description: "",
-        category: "OTHER",
-        type: "EXPENSE",
-        date: new Date(),
-        accountId: mockAccounts[0]?.id || "",
-      });
-    }
-  }, [editingTransaction, form]);
-
   const onClose = () => {
     closeForm();
+  };
+
+  const handleClose = () => {
+    form.reset();
+    onClose();
   };
 
   const onSubmit = async (data: CreateTransaction) => {
@@ -112,10 +90,28 @@ export function TransactionForm() {
     }
   };
 
-  const handleClose = () => {
-    form.reset();
-    onClose();
-  };
+  // Reset form when editing transaction changes
+  useEffect(() => {
+    if (editingTransaction) {
+      form.reset({
+        amount: editingTransaction.amount,
+        description: editingTransaction.description,
+        category: editingTransaction.category,
+        type: editingTransaction.type,
+        date: new Date(editingTransaction.date),
+        accountId: editingTransaction.accountId,
+      });
+    } else {
+      form.reset({
+        amount: "",
+        description: "",
+        category: "OTHER",
+        type: "EXPENSE",
+        date: new Date(),
+        accountId: mockAccounts[0]?.id || "",
+      });
+    }
+  }, [editingTransaction, form]);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -165,13 +161,10 @@ export function TransactionForm() {
                     <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <FormControl>
                       <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
+                        {...field}
                         placeholder="0.00"
                         className="pl-10"
-                        {...field}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                        onChange={(e) => field.onChange(e.target.value)}
                       />
                     </FormControl>
                   </div>
@@ -220,7 +213,10 @@ export function TransactionForm() {
                       </FormControl>
                       <SelectContent>
                         {categoriesOptions.map((category) => (
-                          <SelectItem key={category.value} value={category.value}>
+                          <SelectItem
+                            key={category.value}
+                            value={category.value}
+                          >
                             {category.label}
                           </SelectItem>
                         ))}
@@ -273,8 +269,14 @@ export function TransactionForm() {
                         type="date"
                         className="pl-10"
                         {...field}
-                        value={field.value instanceof Date ? field.value.toISOString().split('T')[0] : field.value}
-                        onChange={(e) => field.onChange(new Date(e.target.value))}
+                        value={
+                          field.value instanceof Date
+                            ? field.value.toISOString().split("T")[0]
+                            : field.value
+                        }
+                        onChange={(e) =>
+                          field.onChange(new Date(e.target.value))
+                        }
                       />
                     </FormControl>
                   </div>
@@ -291,8 +293,8 @@ export function TransactionForm() {
                 {isLoading
                   ? "Saving..."
                   : mode === "create"
-                  ? "Add Transaction"
-                  : "Update Transaction"}
+                    ? "Add Transaction"
+                    : "Update Transaction"}
               </Button>
             </DialogFooter>
           </form>

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -10,16 +10,12 @@ import {
 } from "@/components/ui/select";
 import { useTransactionFilters } from "@/features/transactions/hooks/use-transaction-filters";
 import { Filter, Search } from "lucide-react";
-import { useMemo } from "react";
 import { categoriesOptions } from "../constants/categories";
+
+const transactionsType = new Set(["all", "income", "expense"]);
 
 export function FilterTransactions() {
   const { filters, setFilter } = useTransactionFilters();
-
-  const transactionsType = useMemo(
-    () => new Set(["all", "income", "expense"]),
-    []
-  );
 
   return (
     <div className="flex flex-col sm:flex-row gap-4">
@@ -33,6 +29,7 @@ export function FilterTransactions() {
         />
       </div>
       <Select
+        defaultValue={"expense"}
         value={filters.type}
         onValueChange={(value) => setFilter("type", value)}
       >

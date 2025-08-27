@@ -1,36 +1,32 @@
-'use client'
+"use client";
 
 import { formatCurrency } from "@/lib/utils";
 import { useListTransactions } from "@/features/transactions/hooks/use-list-transactions";
 import { useTransactionFilters } from "@/features/transactions/hooks/use-transaction-filters";
+import { useMemo } from "react";
 
 export function ResultsSummary() {
   const { filters } = useTransactionFilters();
-  const { data, isLoading } = useListTransactions(filters);
+  const { data } = useListTransactions(filters);
+  const startIndex = data ? (data?.page - 1) * data?.limit : 0;
+  const endIndex = data ? startIndex + data.transactions.length : 0;
 
-  if (isLoading || !data) {
-    return (
-      <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <span>Loading...</span>
-      </div>
-    );
-  }
-
-  const { transactions, total, page, limit } = data;
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + transactions.length;
-
-  const totalAmount = transactions.reduce(
-    (sum, t) => sum + (t.type === "INCOME" ? t.amount : -t.amount),
-    0
+  const totalAmount = useMemo(
+    () =>
+      data?.transactions.reduce(
+        (sum, t) =>
+          sum + (t.type === "INCOME" ? Number(t.amount) : Number(-t.amount)),
+        0,
+      ),
+    [data],
   );
 
   return (
     <div className="flex items-center justify-between text-sm text-muted-foreground">
       <span>
-        Showing {startIndex + 1}-{endIndex} of {total} transactions
+        Showing {startIndex + 1}-{endIndex} of {data?.total} transactions
       </span>
-      <span>Total: {formatCurrency(totalAmount)}</span>
+      <span>Total: {formatCurrency(totalAmount ?? 0)}</span>
     </div>
   );
 }

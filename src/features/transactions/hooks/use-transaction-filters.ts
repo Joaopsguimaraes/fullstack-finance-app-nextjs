@@ -2,22 +2,10 @@
 
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useCallback, useMemo } from "react";
-
-export interface TransactionFilters {
-  page: number;
-  limit: number;
-  type: string;
-  category: string;
-  search: string;
-}
-
-const DEFAULT_FILTERS: TransactionFilters = {
-  page: 1,
-  limit: 10,
-  type: "all",
-  category: "all",
-  search: "",
-};
+import {
+  DEFAULT_FILTERS,
+  TransactionFilters,
+} from "../constants/default-filters";
 
 /**
  * Hook to manage transaction filters using URL search params
@@ -70,7 +58,7 @@ export const useTransactionFilters = () => {
 
       router.push(`${pathname}?${params.toString()}`);
     },
-    [searchParams, router, pathname]
+    [searchParams, router, pathname],
   );
 
   // Reset filters to defaults
@@ -83,7 +71,7 @@ export const useTransactionFilters = () => {
     (key: keyof TransactionFilters, value: any) => {
       updateFilters({ [key]: value });
     },
-    [updateFilters]
+    [updateFilters],
   );
 
   // Set multiple filters at once
@@ -91,7 +79,7 @@ export const useTransactionFilters = () => {
     (filters: Partial<TransactionFilters>) => {
       updateFilters(filters);
     },
-    [updateFilters]
+    [updateFilters],
   );
 
   return {

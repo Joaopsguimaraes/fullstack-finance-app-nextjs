@@ -1,4 +1,5 @@
 export const transactionTypes = [
-  { value: "income", label: "Income" },
-  { value: "expense", label: "Expense" },
+  { value: "INCOME", label: "Income" },
+  { value: "EXPENSE", label: "Expense" },
 ];
+

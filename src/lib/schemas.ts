@@ -1,42 +1,30 @@
 import { z } from "zod";
 
-/**
- * User authentication schema
- */
 export const authSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  email: z.email(),
+  password: z.string().min(8),
 });
 
-/**
- * User registration schema
- */
 export const registerSchema = z
   .object({
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    email: z.email(),
+    password: z.string().min(8),
     confirmPassword: z.string(),
-    firstName: z.string().min(1, "First name is required"),
-    lastName: z.string().min(1, "Last name is required"),
+    firstName: z.string().min(1),
+    lastName: z.string().min(1),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
   });
 
-/**
- * Password recovery schema
- */
 export const recoverySchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z.email(),
 });
 
-/**
- * Reset password schema
- */
 export const resetPasswordSchema = z
   .object({
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    password: z.string().min(8),
     confirmPassword: z.string(),
     token: z.string(),
   })
@@ -61,12 +49,12 @@ const transactionCategoryEnum = z.enum([
 
 const transactionSchema = z.object({
   id: z.string().optional(),
-  description: z.string().min(1, "Description is required"),
+  description: z.string().min(1),
   type: z.union([z.literal("INCOME"), z.literal("EXPENSE")]),
-  amount: z.number().positive("Amount must be positive"),
+  amount: z.string(),
   category: transactionCategoryEnum,
   date: z.date(),
-  accountId: z.string().min(1, "Account is required"),
+  accountId: z.string().min(1),
   userId: z.string().optional(),
 });
 
@@ -87,7 +75,6 @@ const paginatedTransactionsSchema = z.object({
   totalPages: z.number(),
 });
 
-// Type definitions
 type AuthData = z.infer<typeof authSchema>;
 type RegisterData = z.infer<typeof registerSchema>;
 type RecoveryData = z.infer<typeof recoverySchema>;

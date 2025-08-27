@@ -9,7 +9,7 @@ export class AuthService {
   /**
    * Register a new user
    */
-  static async register(data: RegisterData): Promise<{ success: boolean; message: string }> {
+  static async register(data: RegisterData) {
     try {
       // Check if user already exists
       const existingUser = await prisma.user.findUnique({
@@ -17,17 +17,14 @@ export class AuthService {
       });
 
       if (existingUser) {
-        return {
-          success: false,
-          message: "User with this email already exists",
-        };
+        throw new Error("User with this email already exists");
       }
 
       // Hash password
       const hashedPassword = await bcrypt.hash(data.password, 12);
 
       // Create user
-      await prisma.user.create({
+      const result = await prisma.user.create({
         data: {
           email: data.email,
           password: hashedPassword,
@@ -35,23 +32,18 @@ export class AuthService {
         },
       });
 
-      return {
-        success: true,
-        message: "User registered successfully",
-      };
+      return result;
     } catch (error) {
       console.error("Registration error:", error);
-      return {
-        success: false,
-        message: "Failed to register user",
-      };
     }
   }
 
   /**
    * Request password recovery
    */
-  static async requestPasswordRecovery(email: string): Promise<{ success: boolean; message: string }> {
+  static async requestPasswordRecovery(
+    email: string
+  ): Promise<{ success: boolean; message: string }> {
     try {
       const user = await prisma.user.findUnique({
         where: { email },
@@ -61,7 +53,8 @@ export class AuthService {
         // Return success even if user doesn't exist for security
         return {
           success: true,
-          message: "If an account with this email exists, you will receive a recovery link",
+          message:
+            "If an account with this email exists, you will receive a recovery link",
         };
       }
 
@@ -84,7 +77,8 @@ export class AuthService {
 
       return {
         success: true,
-        message: "If an account with this email exists, you will receive a recovery link",
+        message:
+          "If an account with this email exists, you will receive a recovery link",
       };
     } catch (error) {
       console.error("Password recovery error:", error);
@@ -98,7 +92,9 @@ export class AuthService {
   /**
    * Reset password with token
    */
-  static async resetPassword(data: ResetPasswordData): Promise<{ success: boolean; message: string }> {
+  static async resetPassword(
+    data: ResetPasswordData
+  ): Promise<{ success: boolean; message: string }> {
     try {
       // Find and validate token
       const verificationToken = await prisma.verificationToken.findUnique({
@@ -142,7 +138,9 @@ export class AuthService {
   /**
    * Verify recovery token
    */
-  static async verifyRecoveryToken(token: string): Promise<{ valid: boolean; email?: string }> {
+  static async verifyRecoveryToken(
+    token: string
+  ): Promise<{ valid: boolean; email?: string }> {
     try {
       const verificationToken = await prisma.verificationToken.findUnique({
         where: { token },

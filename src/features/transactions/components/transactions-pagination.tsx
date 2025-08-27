@@ -8,37 +8,60 @@ import {
 } from "@/components/ui/pagination";
 import { useTransactionFilters } from "@/features/transactions/hooks/use-transaction-filters";
 import { useListTransactions } from "@/features/transactions/hooks/use-list-transactions";
+import { useMemo } from "react";
 
 export function TransactionsPagination() {
   const { filters, setFilter } = useTransactionFilters();
   const { data } = useListTransactions(filters);
 
-  if (!data || data.totalPages <= 1) {
-    return null;
-  }
+  const paginationValues = useMemo(() => {
+    if (!data) {
+      return {
+        currentPage: 1,
+        totalPages: 1,
+      };
+    } else {
+      return {
+        currentPage: data.page,
+        totalPages: data.totalPages,
+      };
+    }
+  }, [data]);
 
-  const { totalPages, page: currentPage } = data;
+  const paginationPrevious = () => {
+    setFilter("page", Math.max(1, paginationValues.currentPage - 1));
+  };
+
+  const paginationNext = () => {
+    setFilter(
+      "page",
+      Math.min(paginationValues.totalPages, paginationValues.currentPage + 1),
+    );
+  };
 
   return (
     <Pagination>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            onClick={() => setFilter("page", Math.max(1, currentPage - 1))}
+            onClick={paginationPrevious}
             size={"sm"}
             className={
-              currentPage === 1
+              paginationValues.currentPage === 1
                 ? "pointer-events-none opacity-50"
                 : "cursor-pointer"
             }
           />
         </PaginationItem>
 
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+        {Array.from(
+          { length: paginationValues.totalPages },
+          (_, i) => i + 1,
+        ).map((page) => (
           <PaginationItem key={page}>
             <PaginationLink
               size={"sm"}
-              isActive={currentPage === page}
+              isActive={paginationValues.currentPage === page}
               onClick={() => setFilter("page", page)}
               className="cursor-pointer"
             >
@@ -50,11 +73,9 @@ export function TransactionsPagination() {
         <PaginationItem>
           <PaginationNext
             size={"sm"}
-            onClick={() =>
-              setFilter("page", Math.min(totalPages, currentPage + 1))
-            }
+            onClick={paginationNext}
             className={
-              currentPage === totalPages
+              paginationValues.currentPage === paginationValues.totalPages
                 ? "pointer-events-none opacity-50"
                 : "cursor-pointer"
             }

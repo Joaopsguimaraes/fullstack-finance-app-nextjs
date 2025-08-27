@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,28 +15,25 @@ import { useTransactionForm } from "@/features/transactions/hooks/use-transactio
 export function DialogDeleteTransaction() {
   const { closeDeleteDialog, formState } = useTransactionForm();
   const deleteTransaction = useDeleteTransaction();
-
-  const { deleteDialog: { transaction, isOpen }} = formState
+  const { deleteDialog } = formState;
 
   const confirmDelete = async () => {
-    if (transaction?.id) {
-      try {
-        await deleteTransaction.mutateAsync(transaction.id);
-        closeDeleteDialog();
-      } catch (error) {
-        console.error("Error deleting transaction:", error);
-      }
+    if (deleteDialog.transaction?.id) {
+      await deleteTransaction.mutateAsync(deleteDialog.transaction.id);
+
+      closeDeleteDialog();
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={closeDeleteDialog}>
+    <Dialog open={deleteDialog.isOpen} onOpenChange={closeDeleteDialog}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Delete Transaction</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete {transaction?.description}? This
-            action cannot be undone.
+            Are you sure you want to delete{" "}
+            {deleteDialog.transaction?.description}? This action cannot be
+            undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

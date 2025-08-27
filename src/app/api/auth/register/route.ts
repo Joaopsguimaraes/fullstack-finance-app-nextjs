@@ -9,15 +9,15 @@ export async function POST(request: NextRequest) {
 
     const result = await AuthService.register(validatedData);
 
-    if (!result.success) {
+    if (!result) {
       return NextResponse.json(
-        { message: result.message },
+        { message: "Failed to register, please try again" },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { message: result.message },
+      { result },
       { status: 201 }
     );
   } catch (error) {
@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.error("Registration error:", error);
+    
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }

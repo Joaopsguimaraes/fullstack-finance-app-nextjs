@@ -42,14 +42,17 @@ export class TransactionService {
   }
 
   static async createTransaction(
-    data: CreateTransaction
+    data: CreateTransaction,
   ): Promise<Transaction> {
     const response = await fetch(API_BASE_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        amount: Number(data.amount),
+      }),
     });
 
     if (!response.ok) {
@@ -62,7 +65,7 @@ export class TransactionService {
 
   static async updateTransaction(
     id: string,
-    data: UpdateTransaction
+    data: UpdateTransaction,
   ): Promise<Transaction> {
     const response = await fetch(`${API_BASE_URL}/${id}`, {
       method: "PUT",

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,9 +27,10 @@ const mockAccounts = [
 
 export function TransactionsTable() {
   const { filters } = useTransactionFilters();
-  const { data, isLoading, error } = useListTransactions(filters);
+  // TODO: Create loading components
+  const { data } = useListTransactions(filters);
   const { openEditForm, openDeleteDialog } = useTransactionForm();
-
+  const transactions = data?.transactions || [];
   const getAccountName = (accountId: string) => {
     const account = mockAccounts.find((a) => a.id === accountId);
     return account?.name || "Unknown Account";
@@ -50,24 +51,6 @@ export function TransactionsTable() {
   const handleDelete = (transaction: Transaction) => {
     openDeleteDialog(transaction);
   };
-
-  if (isLoading) {
-    return (
-      <div className="border rounded-lg p-8 text-center">
-        <div className="text-muted-foreground">Loading transactions...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="border rounded-lg p-8 text-center">
-        <div className="text-destructive">Error loading transactions</div>
-      </div>
-    );
-  }
-
-  const transactions = data?.transactions || [];
 
   return (
     <>
@@ -100,7 +83,7 @@ export function TransactionsTable() {
                   <TableCell>
                     <div className="flex items-center space-x-2">
                       {getTransactionIcon(
-                        transaction.type as "income" | "expense"
+                        transaction.type as "income" | "expense",
                       )}
                       <span className="capitalize">{transaction.type}</span>
                     </div>
@@ -111,7 +94,7 @@ export function TransactionsTable() {
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(
-                        transaction.category
+                        transaction.category,
                       )}`}
                     >
                       {transaction.category}

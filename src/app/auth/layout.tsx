@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Inter } from "next/font/google";
 
-const geist = Geist({
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-geist",
 });
@@ -17,7 +17,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 ${geist.variable} font-sans`}>
+    <div className={`min-h-screen bg-gradient-to-br from-blue-500 to-indigo-800 ${inter.variable} font-sans`}>
       <div className="flex min-h-screen items-center justify-center p-4">
         <div className="w-full max-w-md">
           {children}
