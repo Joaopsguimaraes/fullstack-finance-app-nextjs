@@ -39,6 +39,6 @@
     "node_modules",
     "dist",
     //exclude prisma generated files
-    "src/generated"
+    "src/prisma/*"
   ]
 }
