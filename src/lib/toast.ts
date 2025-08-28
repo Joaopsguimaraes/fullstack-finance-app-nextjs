@@ -1,12 +1,12 @@
-import { toast } from "sonner";
+import { toast } from 'sonner'
 
 export interface ToastOptions {
-  description?: string;
-  duration?: number;
+  description?: string
+  duration?: number
   action?: {
-    label: string;
-    onClick: () => void;
-  };
+    label: string
+    onClick: () => void
+  }
 }
 
 export class ToastManager {
@@ -15,7 +15,7 @@ export class ToastManager {
       description: options?.description,
       duration: options?.duration,
       action: options?.action,
-    });
+    })
   }
 
   static error(message: string, options?: ToastOptions): void {
@@ -23,7 +23,7 @@ export class ToastManager {
       description: options?.description,
       duration: options?.duration,
       action: options?.action,
-    });
+    })
   }
 
   static warning(message: string, options?: ToastOptions): void {
@@ -31,7 +31,7 @@ export class ToastManager {
       description: options?.description,
       duration: options?.duration,
       action: options?.action,
-    });
+    })
   }
 
   static info(message: string, options?: ToastOptions): void {
@@ -39,18 +39,18 @@ export class ToastManager {
       description: options?.description,
       duration: options?.duration,
       action: options?.action,
-    });
+    })
   }
 
   static loading(message: string, options?: ToastOptions): string | number {
     return toast.loading(message, {
       description: options?.description,
       duration: options?.duration,
-    });
+    })
   }
 
   static dismiss(toastId?: string | number): void {
-    toast.dismiss(toastId);
+    toast.dismiss(toastId)
   }
 }
 
@@ -61,4 +61,4 @@ export const showToast = {
   info: ToastManager.info,
   loading: ToastManager.loading,
   dismiss: ToastManager.dismiss,
-};
+}

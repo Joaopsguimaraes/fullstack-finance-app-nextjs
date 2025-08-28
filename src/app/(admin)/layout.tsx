@@ -1,15 +1,15 @@
-import { AppLayout } from "@/layout/app-layout";
-import { auth } from "@/lib/auth";
-import { Session } from "next-auth";
-import { redirect } from "next/navigation";
-import type { PropsWithChildren } from "react";
+import { AppLayout } from '@/layout/app-layout'
+import { auth } from '@/lib/auth'
+import { type Session } from 'next-auth'
+import { redirect } from 'next/navigation'
+import type { PropsWithChildren } from 'react'
 
 export default async function Layout({ children }: PropsWithChildren) {
-  const session: Session | null = await auth();
+  const session: Session | null = await auth()
 
   if (!session) {
-    redirect("auth/signin");
+    redirect('auth/signin')
   }
 
-  return <AppLayout session={session}>{children}</AppLayout>;
+  return <AppLayout session={session}>{children}</AppLayout>
 }

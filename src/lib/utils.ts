@@ -1,8 +1,8 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { type ClassValue, clsx } from 'clsx'
+import { twMerge } from 'tailwind-merge'
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  return twMerge(clsx(inputs))
 }
 
 /**
@@ -14,13 +14,13 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function formatCurrency(
   amount: number,
-  currency: string = "USD",
-  locale: string = "en-US"
+  currency: string = 'USD',
+  locale: string = 'en-US'
 ): string {
   return new Intl.NumberFormat(locale, {
-    style: "currency",
+    style: 'currency',
     currency,
-  }).format(amount);
+  }).format(amount)
 }
 
 /**
@@ -30,7 +30,7 @@ export function formatCurrency(
  * @returns Formatted percentage string
  */
 export function formatPercentage(value: number, decimals: number = 2): string {
-  return `${value.toFixed(decimals)}%`;
+  return `${value.toFixed(decimals)}%`
 }
 
 /**
@@ -38,7 +38,7 @@ export function formatPercentage(value: number, decimals: number = 2): string {
  * @returns Unique ID string
  */
 export function generateId(): string {
-  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+  return Math.random().toString(36).substring(2) + Date.now().toString(36)
 }
 
 /**
@@ -51,9 +51,9 @@ export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout;
+  let timeout: NodeJS.Timeout
   return (...args: Parameters<T>) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
+    clearTimeout(timeout)
+    timeout = setTimeout(() => func(...args), wait)
+  }
 }

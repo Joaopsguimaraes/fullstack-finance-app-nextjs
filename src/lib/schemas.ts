@@ -1,9 +1,9 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 export const authSchema = z.object({
   email: z.email(),
   password: z.string().min(8),
-});
+})
 
 export const registerSchema = z
   .object({
@@ -13,44 +13,44 @@ export const registerSchema = z
     firstName: z.string().min(1),
     lastName: z.string().min(1),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine(data => data.password === data.confirmPassword, {
     message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+    path: ['confirmPassword'],
+  })
 
 const transactionCategoryEnum = z.enum([
-  "FOOD",
-  "TRANSPORT",
-  "ENTERTAINMENT",
-  "UTILITIES",
-  "HEALTH",
-  "EDUCATION",
-  "DEBTS",
-  "SALARY",
-  "FREELANCE",
-  "INVESTMENTS",
-  "OTHER",
-]);
+  'FOOD',
+  'TRANSPORT',
+  'ENTERTAINMENT',
+  'UTILITIES',
+  'HEALTH',
+  'EDUCATION',
+  'DEBTS',
+  'SALARY',
+  'FREELANCE',
+  'INVESTMENTS',
+  'OTHER',
+])
 
 const transactionSchema = z.object({
   id: z.string().optional(),
   description: z.string().min(1),
-  type: z.union([z.literal("INCOME"), z.literal("EXPENSE")]),
+  type: z.union([z.literal('INCOME'), z.literal('EXPENSE')]),
   amount: z.string(),
   category: transactionCategoryEnum,
   date: z.date(),
   accountId: z.string().min(1),
   userId: z.string().optional(),
-});
+})
 
 const createTransactionSchema = transactionSchema.omit({
   id: true,
   userId: true,
-});
+})
 
 const updateTransactionSchema = transactionSchema.partial().extend({
   id: z.string(),
-});
+})
 
 const paginatedTransactionsSchema = z.object({
   transactions: z.array(transactionSchema),
@@ -58,15 +58,15 @@ const paginatedTransactionsSchema = z.object({
   page: z.number(),
   limit: z.number(),
   totalPages: z.number(),
-});
+})
 
-type AuthData = z.infer<typeof authSchema>;
-type RegisterData = z.infer<typeof registerSchema>;
-type Transaction = z.infer<typeof transactionSchema>;
-type CreateTransaction = z.infer<typeof createTransactionSchema>;
-type UpdateTransaction = z.infer<typeof updateTransactionSchema>;
-type PaginatedTransactions = z.infer<typeof paginatedTransactionsSchema>;
-type TransactionCategory = z.infer<typeof transactionCategoryEnum>;
+type AuthData = z.infer<typeof authSchema>
+type RegisterData = z.infer<typeof registerSchema>
+type Transaction = z.infer<typeof transactionSchema>
+type CreateTransaction = z.infer<typeof createTransactionSchema>
+type UpdateTransaction = z.infer<typeof updateTransactionSchema>
+type PaginatedTransactions = z.infer<typeof paginatedTransactionsSchema>
+type TransactionCategory = z.infer<typeof transactionCategoryEnum>
 
 export {
   type AuthData,
@@ -80,4 +80,4 @@ export {
   createTransactionSchema,
   updateTransactionSchema,
   paginatedTransactionsSchema,
-};
+}

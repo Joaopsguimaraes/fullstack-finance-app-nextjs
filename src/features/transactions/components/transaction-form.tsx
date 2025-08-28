@@ -1,21 +1,21 @@
-"use client";
+'use client'
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select'
 import {
   Form,
   FormControl,
@@ -23,72 +23,72 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { createTransactionSchema, type CreateTransaction } from "@/lib/schemas";
-import { useTransactionForm } from "@/features/transactions/hooks/use-transaction-form";
-import { formatCurrency } from "@/lib/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Calendar, DollarSign, FileText, Tag } from "lucide-react";
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { useCreateTransaction } from "../hooks/use-create-transaction";
-import { useUpdateTransaction } from "../hooks/use-update-transaction";
-import { transactionTypes } from "../constants/transaction-type";
-import { categoriesOptions } from "../constants/categories";
+} from '@/components/ui/form'
+import { type CreateTransaction, createTransactionSchema } from '@/lib/schemas'
+import { useTransactionForm } from '@/features/transactions/hooks/use-transaction-form'
+import { formatCurrency } from '@/lib/utils'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Calendar, DollarSign, FileText, Tag } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useCreateTransaction } from '../hooks/use-create-transaction'
+import { useUpdateTransaction } from '../hooks/use-update-transaction'
+import { transactionTypes } from '../constants/transaction-type'
+import { categoriesOptions } from '../constants/categories'
 
 const mockAccounts = [
-  { id: "1", name: "Checking Account", balance: 0, type: "CHECKING" },
-  { id: "2", name: "Savings Account", balance: 0, type: "SAVINGS" },
-];
+  { id: '1', name: 'Checking Account', balance: 0, type: 'CHECKING' },
+  { id: '2', name: 'Savings Account', balance: 0, type: 'SAVINGS' },
+]
 
 export function TransactionForm() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { formState, closeForm } = useTransactionForm();
-  const createTransaction = useCreateTransaction();
-  const updateTransaction = useUpdateTransaction();
-  const { editingTransaction, isFormOpen: isOpen } = formState;
-  const mode = editingTransaction ? "edit" : "create";
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const { formState, closeForm } = useTransactionForm()
+  const createTransaction = useCreateTransaction()
+  const updateTransaction = useUpdateTransaction()
+  const { editingTransaction, isFormOpen: isOpen } = formState
+  const mode = editingTransaction ? 'edit' : 'create'
 
   const form = useForm<CreateTransaction>({
     resolver: zodResolver(createTransactionSchema),
     defaultValues: {
-      amount: "",
-      description: "",
-      category: "OTHER",
-      type: "EXPENSE",
+      amount: '',
+      description: '',
+      category: 'OTHER',
+      type: 'EXPENSE',
       date: new Date(),
-      accountId: mockAccounts[0]?.id || "",
+      accountId: mockAccounts[0]?.id || '',
     },
-  });
+  })
 
   const onClose = () => {
-    closeForm();
-  };
+    closeForm()
+  }
 
   const handleClose = () => {
-    form.reset();
-    onClose();
-  };
+    form.reset()
+    onClose()
+  }
 
   const onSubmit = async (data: CreateTransaction) => {
-    setIsLoading(true);
+    setIsLoading(true)
     try {
-      if (mode === "create") {
-        await createTransaction.mutateAsync(data);
+      if (mode === 'create') {
+        await createTransaction.mutateAsync(data)
       } else if (editingTransaction?.id) {
         await updateTransaction.mutateAsync({
           id: editingTransaction.id,
           data: { ...data, id: editingTransaction.id },
-        });
+        })
       }
-      form.reset();
-      onClose();
+      form.reset()
+      onClose()
     } catch (error) {
-      console.error("Error saving transaction:", error);
+      console.error('Error saving transaction:', error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   // Reset form when editing transaction changes
   useEffect(() => {
@@ -100,32 +100,32 @@ export function TransactionForm() {
         type: editingTransaction.type,
         date: new Date(editingTransaction.date),
         accountId: editingTransaction.accountId,
-      });
+      })
     } else {
       form.reset({
-        amount: "",
-        description: "",
-        category: "OTHER",
-        type: "EXPENSE",
+        amount: '',
+        description: '',
+        category: 'OTHER',
+        type: 'EXPENSE',
         date: new Date(),
-        accountId: mockAccounts[0]?.id || "",
-      });
+        accountId: mockAccounts[0]?.id || '',
+      })
     }
-  }, [editingTransaction, form]);
+  }, [editingTransaction, form])
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
           <DialogTitle>
-            {mode === "create" ? "Add Transaction" : "Edit Transaction"}
+            {mode === 'create' ? 'Add Transaction' : 'Edit Transaction'}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
             <FormField
               control={form.control}
-              name="type"
+              name='type'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Type</FormLabel>
@@ -135,11 +135,11 @@ export function TransactionForm() {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select transaction type" />
+                        <SelectValue placeholder='Select transaction type' />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {transactionTypes.map((type) => (
+                      {transactionTypes.map(type => (
                         <SelectItem key={type.value} value={type.value}>
                           {type.label}
                         </SelectItem>
@@ -153,18 +153,18 @@ export function TransactionForm() {
 
             <FormField
               control={form.control}
-              name="amount"
+              name='amount'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Amount</FormLabel>
-                  <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <div className='relative'>
+                    <DollarSign className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform' />
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder="0.00"
-                        className="pl-10"
-                        onChange={(e) => field.onChange(e.target.value)}
+                        placeholder='0.00'
+                        className='pl-10'
+                        onChange={e => field.onChange(e.target.value)}
                       />
                     </FormControl>
                   </div>
@@ -175,16 +175,16 @@ export function TransactionForm() {
 
             <FormField
               control={form.control}
-              name="description"
+              name='description'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Description</FormLabel>
-                  <div className="relative">
-                    <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <div className='relative'>
+                    <FileText className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform' />
                     <FormControl>
                       <Input
-                        placeholder="Enter description"
-                        className="pl-10"
+                        placeholder='Enter description'
+                        className='pl-10'
                         {...field}
                       />
                     </FormControl>
@@ -196,23 +196,23 @@ export function TransactionForm() {
 
             <FormField
               control={form.control}
-              name="category"
+              name='category'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                  <div className="relative">
-                    <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <div className='relative'>
+                    <Tag className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform' />
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="pl-10">
-                          <SelectValue placeholder="Select category" />
+                        <SelectTrigger className='pl-10'>
+                          <SelectValue placeholder='Select category' />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {categoriesOptions.map((category) => (
+                        {categoriesOptions.map(category => (
                           <SelectItem
                             key={category.value}
                             value={category.value}
@@ -230,7 +230,7 @@ export function TransactionForm() {
 
             <FormField
               control={form.control}
-              name="accountId"
+              name='accountId'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Account</FormLabel>
@@ -240,11 +240,11 @@ export function TransactionForm() {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select account" />
+                        <SelectValue placeholder='Select account' />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {mockAccounts.map((account) => (
+                      {mockAccounts.map(account => (
                         <SelectItem key={account.id} value={account.id}>
                           {account.name} ({formatCurrency(account.balance)})
                         </SelectItem>
@@ -258,25 +258,23 @@ export function TransactionForm() {
 
             <FormField
               control={form.control}
-              name="date"
+              name='date'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Date</FormLabel>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <div className='relative'>
+                    <Calendar className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform' />
                     <FormControl>
                       <Input
-                        type="date"
-                        className="pl-10"
+                        type='date'
+                        className='pl-10'
                         {...field}
                         value={
                           field.value instanceof Date
-                            ? field.value.toISOString().split("T")[0]
+                            ? field.value.toISOString().split('T')[0]
                             : field.value
                         }
-                        onChange={(e) =>
-                          field.onChange(new Date(e.target.value))
-                        }
+                        onChange={e => field.onChange(new Date(e.target.value))}
                       />
                     </FormControl>
                   </div>
@@ -286,20 +284,20 @@ export function TransactionForm() {
             />
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleClose}>
+              <Button type='button' variant='outline' onClick={handleClose}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isLoading}>
+              <Button type='submit' disabled={isLoading}>
                 {isLoading
-                  ? "Saving..."
-                  : mode === "create"
-                    ? "Add Transaction"
-                    : "Update Transaction"}
+                  ? 'Saving...'
+                  : mode === 'create'
+                    ? 'Add Transaction'
+                    : 'Update Transaction'}
               </Button>
             </DialogFooter>
           </form>
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

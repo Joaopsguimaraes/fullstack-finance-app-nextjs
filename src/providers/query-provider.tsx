@@ -1,13 +1,13 @@
-"use client";
+'use client'
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { useState } from "react";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { useState } from 'react'
 
-const SLATE_TIME = 5 * 60 * 1000; // 5 minutes
+const SLATE_TIME = 5 * 60 * 1000 // 5 minutes
 
 interface QueryProviderProps {
-  readonly children: React.ReactNode;
+  readonly children: React.ReactNode
 }
 
 export function QueryProvider({ children }: QueryProviderProps) {
@@ -21,12 +21,12 @@ export function QueryProvider({ children }: QueryProviderProps) {
           },
         },
       })
-  );
+  )
 
   return (
     <QueryClientProvider client={queryClient}>
       {children}
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
-  );
+  )
 }

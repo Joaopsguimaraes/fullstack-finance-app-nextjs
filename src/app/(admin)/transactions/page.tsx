@@ -1,35 +1,25 @@
-import { Suspense } from "react";
-import dynamic from "next/dynamic";
-import { Card, CardContent } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Suspense } from 'react'
+import dynamic from 'next/dynamic'
+import { LoadingCard } from '@/components/ui/loading-states'
 
-const Transactions = dynamic(
-  () => import("@/features/transactions/components/transactions").then(mod => ({ default: mod.Transactions })),
+const EnhancedTransactions = dynamic(
+  () =>
+    import('@/features/transactions/components/transactions').then(mod => ({
+      default: mod.Transactions,
+    })),
   {
-    loading: () => (
-      <Card className="w-full shadow-lg">
-        <CardContent className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin" />
-          <span className="ml-2">Loading transactions...</span>
-        </CardContent>
-      </Card>
-    ),
+    loading: () => <LoadingCard variant='skeleton' title='Transactions' />,
   }
-);
+)
 
 export default function TransactionsPage() {
   return (
-    <Suspense 
+    <Suspense
       fallback={
-        <Card className="w-full shadow-lg">
-          <CardContent className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin" />
-            <span className="ml-2">Loading transactions...</span>
-          </CardContent>
-        </Card>
+        <LoadingCard variant='spinner' description='Loading transactions...' />
       }
     >
-      <Transactions />
+      <EnhancedTransactions />
     </Suspense>
-  );
+  )
 }

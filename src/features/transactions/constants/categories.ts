@@ -1,44 +1,44 @@
-import { CATEGORIES_ENUM } from "./categories-enum";
+import { CATEGORIES_ENUM } from './categories-enum'
 
 export const categoriesOptions = [
   {
-    label: "Food",
+    label: 'Food',
     value: CATEGORIES_ENUM.FOOD,
   },
   {
-    label: "Transportation",
+    label: 'Transportation',
     value: CATEGORIES_ENUM.TRANSPORT,
   },
   {
-    label: "Utilities",
+    label: 'Utilities',
     value: CATEGORIES_ENUM.UTILITIES,
   },
   {
-    label: "Health",
+    label: 'Health',
     value: CATEGORIES_ENUM.HEALTH,
   },
   {
-    label: "Education",
+    label: 'Education',
     value: CATEGORIES_ENUM.EDUCATION,
   },
   {
-    label: "Debts",
+    label: 'Debts',
     value: CATEGORIES_ENUM.DEBTS,
   },
   {
-    label: "Salary",
+    label: 'Salary',
     value: CATEGORIES_ENUM.SALARY,
   },
   {
-    label: "Freelance",
+    label: 'Freelance',
     value: CATEGORIES_ENUM.FREELANCE,
   },
   {
-    label: "Investments",
+    label: 'Investments',
     value: CATEGORIES_ENUM.INVESTMENTS,
   },
   {
-    label: "Other",
+    label: 'Other',
     value: CATEGORIES_ENUM.OTHER,
   },
-];
+]

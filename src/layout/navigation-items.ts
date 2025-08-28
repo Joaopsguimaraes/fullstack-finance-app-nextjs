@@ -1,5 +1,6 @@
-import { CreditCard } from "lucide-react";
+import { CreditCard, PieChart } from 'lucide-react'
 
 export const navigationItems = [
-  { name: "Transactions", href: "/transactions", icon: CreditCard },
-];
+  { name: 'Dashboard', href: '/dashboard', icon: PieChart },
+  { name: 'Transactions', href: '/transactions', icon: CreditCard },
+]

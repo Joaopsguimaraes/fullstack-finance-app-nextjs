@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   Form,
@@ -7,20 +7,20 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { RegisterData, registerSchema } from "@/lib/schemas";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { useRegister } from "../hooks/use-register";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { EyeIcon, EyeOffIcon, Loader2Icon } from "lucide-react";
+} from '@/components/ui/form'
+import { type RegisterData, registerSchema } from '@/lib/schemas'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { useRegister } from '../hooks/use-register'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { EyeIcon, EyeOffIcon, Loader2Icon } from 'lucide-react'
 
 export function RegisterForm() {
   const form = useForm<RegisterData>({
     resolver: zodResolver(registerSchema),
-  });
-  const { control, handleSubmit } = form;
+  })
+  const { control, handleSubmit } = form
   const {
     onSubmit,
     isLoading,
@@ -28,20 +28,20 @@ export function RegisterForm() {
     onToggleShowPassword,
     showConfirmPassword,
     showPassword,
-  } = useRegister();
+  } = useRegister()
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+        <div className='grid grid-cols-2 gap-4'>
           <FormField
             control={control}
-            name="firstName"
+            name='firstName'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>First name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your first name..." {...field} />
+                  <Input placeholder='Enter your first name...' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -50,12 +50,12 @@ export function RegisterForm() {
 
           <FormField
             control={control}
-            name="lastName"
+            name='lastName'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Last name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your last name..." {...field} />
+                  <Input placeholder='Enter your last name...' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -65,14 +65,14 @@ export function RegisterForm() {
 
         <FormField
           control={control}
-          name="email"
+          name='email'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter your email..."
-                  type="email"
+                  placeholder='Enter your email...'
+                  type='email'
                   {...field}
                 />
               </FormControl>
@@ -83,23 +83,23 @@ export function RegisterForm() {
 
         <FormField
           control={control}
-          name="password"
+          name='password'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Password</FormLabel>
-              <FormControl className="relative">
-                <Input placeholder="********" {...field} />
+              <FormControl className='relative'>
+                <Input placeholder='********' {...field} />
                 <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  type='button'
+                  variant='ghost'
+                  size='sm'
+                  className='absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent'
                   onClick={onToggleShowPassword}
                 >
                   {showPassword ? (
-                    <EyeOffIcon className="h-4 w-4" />
+                    <EyeOffIcon className='h-4 w-4' />
                   ) : (
-                    <EyeIcon className="h-4 w-4" />
+                    <EyeIcon className='h-4 w-4' />
                   )}
                 </Button>
               </FormControl>
@@ -110,23 +110,23 @@ export function RegisterForm() {
 
         <FormField
           control={control}
-          name="confirmPassword"
+          name='confirmPassword'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Confirm password</FormLabel>
-              <FormControl className="relative">
-                <Input placeholder="********" {...field} />
+              <FormControl className='relative'>
+                <Input placeholder='********' {...field} />
                 <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  type='button'
+                  variant='ghost'
+                  size='sm'
+                  className='absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent'
                   onClick={onToggleShowConfirmPassword}
                 >
                   {showConfirmPassword ? (
-                    <EyeOffIcon className="h-4 w-4" />
+                    <EyeOffIcon className='h-4 w-4' />
                   ) : (
-                    <EyeIcon className="h-4 w-4" />
+                    <EyeIcon className='h-4 w-4' />
                   )}
                 </Button>
               </FormControl>
@@ -135,17 +135,17 @@ export function RegisterForm() {
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button type='submit' className='w-full' disabled={isLoading}>
           {isLoading ? (
             <>
-              <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2Icon className='mr-2 h-4 w-4 animate-spin' />
               Creating account...
             </>
           ) : (
-            "Create account"
+            'Create account'
           )}
         </Button>
       </form>
     </Form>
-  );
+  )
 }

@@ -1,18 +1,18 @@
-import { Sidebar } from "@/layout/sidebar";
-import { Session } from "next-auth";
-import { PropsWithChildren } from "react";
+import { Sidebar } from '@/layout/sidebar'
+import { type Session } from 'next-auth'
+import { type PropsWithChildren } from 'react'
 
 type Props = Readonly<
   PropsWithChildren & {
-    session: Session;
+    session: Session
   }
->;
+>
 
 export function AppLayout({ children, session }: Props) {
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className='bg-background flex min-h-screen'>
       <Sidebar user={session.user} />
-      <main className="p-6 w-full">{children}</main>
+      <main className='w-full p-6'>{children}</main>
     </div>
-  );
+  )
 }

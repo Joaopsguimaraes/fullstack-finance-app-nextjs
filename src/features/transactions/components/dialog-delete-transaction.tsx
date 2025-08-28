@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -8,22 +8,22 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { useDeleteTransaction } from "@/features/transactions/hooks/use-delete-transaction";
-import { useTransactionForm } from "@/features/transactions/hooks/use-transaction-form";
+} from '@/components/ui/dialog'
+import { useDeleteTransaction } from '@/features/transactions/hooks/use-delete-transaction'
+import { useTransactionForm } from '@/features/transactions/hooks/use-transaction-form'
 
 export function DialogDeleteTransaction() {
-  const { closeDeleteDialog, formState } = useTransactionForm();
-  const deleteTransaction = useDeleteTransaction();
-  const { deleteDialog } = formState;
+  const { closeDeleteDialog, formState } = useTransactionForm()
+  const deleteTransaction = useDeleteTransaction()
+  const { deleteDialog } = formState
 
   const confirmDelete = async () => {
     if (deleteDialog.transaction?.id) {
-      await deleteTransaction.mutateAsync(deleteDialog.transaction.id);
+      await deleteTransaction.mutateAsync(deleteDialog.transaction.id)
 
-      closeDeleteDialog();
+      closeDeleteDialog()
     }
-  };
+  }
 
   return (
     <Dialog open={deleteDialog.isOpen} onOpenChange={closeDeleteDialog}>
@@ -31,24 +31,24 @@ export function DialogDeleteTransaction() {
         <DialogHeader>
           <DialogTitle>Delete Transaction</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete{" "}
+            Are you sure you want to delete{' '}
             {deleteDialog.transaction?.description}? This action cannot be
             undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={closeDeleteDialog}>
+          <Button variant='outline' onClick={closeDeleteDialog}>
             Cancel
           </Button>
           <Button
-            variant="destructive"
+            variant='destructive'
             onClick={confirmDelete}
             disabled={deleteTransaction.isPending}
           >
-            {deleteTransaction.isPending ? "Deleting..." : "Delete"}
+            {deleteTransaction.isPending ? 'Deleting...' : 'Delete'}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

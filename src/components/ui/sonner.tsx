@@ -1,16 +1,16 @@
-"use client";
+'use client'
 
-import { Toaster } from "sonner";
+import { Toaster } from 'sonner'
 
 export const SonnerProvider = () => {
   return (
     <Toaster
-      position="top-right"
+      position='top-right'
       richColors
       closeButton
       duration={4000}
       expand={true}
-      theme="light"
+      theme='light'
     />
-  );
-};
+  )
+}
