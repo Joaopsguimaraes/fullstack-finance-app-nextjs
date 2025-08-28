@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "./generated/prisma"
+  output   = "./.generated/prisma"
 }
 
 datasource db {
@@ -51,37 +51,28 @@ model User {
   accounts     Account[]
   sessions     Session[]
   transactions Transaction[]
-  userAccounts UserAccount[]
+  bankAccount  BankAccount[]
 
   @@map("users")
 }
 
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-  @@map("verification_tokens")
-}
-
-model UserAccount {
-  id           String        @id @default(uuid())
-  name         String
-  type         AccountType
-  balance      Float         @default(0)
-  userId       String        @map("user_id")
-  user         User          @relation(fields: [userId], references: [id])
-  transactions Transaction[]
-
-  @@map("user_accounts")
-}
-
-enum AccountType {
+enum BankAccountType {
   CHECKING
   SAVINGS
   CREDIT
   INVESTMENT
+}
+
+model BankAccount {
+  id           String          @id @default(uuid())
+  name         String
+  type         BankAccountType
+  balance      Float           @default(0)
+  userId       String          @map("user_id")
+  user         User            @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+
+  @@map("bank_accounts")
 }
 
 enum TransactionCategory {
@@ -99,17 +90,17 @@ enum TransactionCategory {
 }
 
 model Transaction {
-  id          String              @id @default(uuid())
-  description String
-  type        String // "INCOME" or "EXPENSE"
-  amount      Float
-  category    TransactionCategory
-  date        DateTime            @default(now())
-  accountId   String              @map("account_id")
-  userId      String              @map("user_id")
+  id            String              @id @default(uuid())
+  description   String
+  type          String
+  amount        Float
+  category      TransactionCategory
+  date          DateTime            @default(now())
+  bankAccountId String              @map("bank_account_id")
+  userId        String              @map("user_id")
 
-  user    User        @relation(fields: [userId], references: [id])
-  account UserAccount @relation(fields: [accountId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
+  bankAccount BankAccount @relation(fields: [bankAccountId], references: [id])
 
   @@map("transactions")
 }

@@ -18,21 +18,6 @@ export const registerSchema = z
     path: ["confirmPassword"],
   });
 
-export const recoverySchema = z.object({
-  email: z.email(),
-});
-
-export const resetPasswordSchema = z
-  .object({
-    password: z.string().min(8),
-    confirmPassword: z.string(),
-    token: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
-
 const transactionCategoryEnum = z.enum([
   "FOOD",
   "TRANSPORT",
@@ -77,8 +62,6 @@ const paginatedTransactionsSchema = z.object({
 
 type AuthData = z.infer<typeof authSchema>;
 type RegisterData = z.infer<typeof registerSchema>;
-type RecoveryData = z.infer<typeof recoverySchema>;
-type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
 type Transaction = z.infer<typeof transactionSchema>;
 type CreateTransaction = z.infer<typeof createTransactionSchema>;
 type UpdateTransaction = z.infer<typeof updateTransactionSchema>;
@@ -88,8 +71,6 @@ type TransactionCategory = z.infer<typeof transactionCategoryEnum>;
 export {
   type AuthData,
   type RegisterData,
-  type RecoveryData,
-  type ResetPasswordData,
   type Transaction,
   type CreateTransaction,
   type UpdateTransaction,

@@ -1,15 +1,43 @@
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createTransactionSchema } from "@/lib/schemas";
 
 export async function POST(request: Request) {
+  const session = await auth();
+
+  if (!session?.user) {
+    return new Response(JSON.stringify({ message: "Unauthorized" }), {
+      status: 401,
+    });
+  }
+
   try {
     const body = await request.json();
     const validatedData = createTransactionSchema.parse(body);
-    
+
+    if (!session.user.email) {
+      return new Response(JSON.stringify({ message: "Unauthorized" }), {
+        status: 401,
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        email: session.user.email,
+      },
+    });
+
+    if (!user) {
+      return new Response(JSON.stringify({ message: "user not found" }), {
+        status: 404,
+      });
+    }
+
     const result = await prisma.transaction.create({
       data: {
         ...validatedData,
-        userId: "", // TODO: Replace with actual user ID from auth
+        amount: Number(validatedData.amount),
+        userId: user?.id,
       },
     });
 
@@ -21,39 +49,65 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
+  const session = await auth();
+
+  if (!session?.user) {
+    return new Response(JSON.stringify({ message: "Unauthorized" }), {
+      status: 401,
+    });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
-    
+
+    if (!session.user.email) {
+      return new Response(JSON.stringify({ message: "Unauthorized" }), {
+        status: 401,
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        email: session.user.email,
+      },
+    });
+
+    if (!user) {
+      return new Response(JSON.stringify({ message: "user not found" }), {
+        status: 404,
+      });
+    }
+
     // Parse query parameters
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
     const type = searchParams.get("type");
-    const category = searchParams.get("category");
+    const category = searchParams.get("category")
     const search = searchParams.get("search");
-    
+
     // Calculate skip value for pagination
     const skip = (page - 1) * limit;
-    
+
     // Build where clause
     const where: any = {
-      userId: "", // TODO: Replace with actual user ID from auth
+      userId: user.id,
     };
-    
+
     if (type && type !== "all") {
-      where.type = type;
+      where.type = type.toUpperCase();
     }
-    
+
     if (category && category !== "all") {
-      where.category = category;
+      where.category = category.toUpperCase();
     }
-    
+
     if (search) {
       where.description = {
         contains: search,
         mode: "insensitive",
       };
     }
-    
+
     // Get transactions with pagination
     const [transactions, total] = await Promise.all([
       prisma.transaction.findMany({
@@ -73,10 +127,10 @@ export async function GET(request: Request) {
       }),
       prisma.transaction.count({ where }),
     ]);
-    
+
     // Calculate pagination metadata
     const totalPages = Math.ceil(total / limit);
-    
+
     const result = {
       transactions,
       total,

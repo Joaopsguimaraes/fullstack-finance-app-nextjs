@@ -83,7 +83,7 @@ export function TransactionsTable() {
                   <TableCell>
                     <div className="flex items-center space-x-2">
                       {getTransactionIcon(
-                        transaction.type as "income" | "expense",
+                        transaction.type as "income" | "expense"
                       )}
                       <span className="capitalize">{transaction.type}</span>
                     </div>
@@ -94,7 +94,7 @@ export function TransactionsTable() {
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(
-                        transaction.category,
+                        transaction.category
                       )}`}
                     >
                       {transaction.category}
@@ -108,7 +108,7 @@ export function TransactionsTable() {
                     }
                   >
                     {transaction.type === "INCOME" ? "+" : "-"}
-                    {formatCurrency(transaction.amount)}
+                    {formatCurrency(Number(transaction.amount))}
                   </TableCell>
                   <TableCell>{getAccountName(transaction.accountId)}</TableCell>
                   <TableCell>

@@ -1,12 +1,9 @@
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
-import type { AuthData, RegisterData, ResetPasswordData } from "@/lib/schemas";
+import type { AuthData, RegisterData } from "@/lib/schemas";
 import { toast } from "sonner";
 
-/**
- * Hook for authentication operations
- */
 export const useAuth = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { data: session, status } = useSession();
@@ -31,7 +28,7 @@ export const useAuth = () => {
         setIsLoading(false);
       }
     },
-    [router],
+    [router]
   );
 
   const logout = useCallback(async () => {
@@ -41,7 +38,7 @@ export const useAuth = () => {
 
   const register = useCallback(async (data: RegisterData) => {
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
@@ -51,72 +48,16 @@ export const useAuth = () => {
       });
 
       return await response.json();
-
     } catch (error) {
-      setIsLoading(false)
+      setIsLoading(false);
       console.error("Registration error:", error);
-      const reasonError = error instanceof Error ? error.message : "Unexpected Error, please try again"
-      toast.error(reasonError)
+      const reasonError =
+        error instanceof Error
+          ? error.message
+          : "Unexpected Error, please try again";
+      toast.error(reasonError);
     } finally {
-      setIsLoading(false)
-    }
-  }, []);
-
-  const requestPasswordRecovery = useCallback(async (email: string) => {
-    try {
-      const response = await fetch("/api/auth/recovery", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        return {
-          success: false,
-          message: result.message || "Recovery request failed",
-        };
-      }
-
-      return result;
-    } catch (error) {
-      console.error("Recovery error:", error);
-      return {
-        success: false,
-        message: "An error occurred during recovery request",
-      };
-    }
-  }, []);
-
-  const resetPassword = useCallback(async (data: ResetPasswordData) => {
-    try {
-      const response = await fetch("/api/auth/reset-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        return {
-          success: false,
-          message: result.message || "Password reset failed",
-        };
-      }
-
-      return result;
-    } catch (error) {
-      console.error("Password reset error:", error);
-      return {
-        success: false,
-        message: "An error occurred during password reset",
-      };
+      setIsLoading(false);
     }
   }, []);
 
@@ -128,7 +69,5 @@ export const useAuth = () => {
     login,
     logout,
     register,
-    requestPasswordRecovery,
-    resetPassword,
   };
 };
