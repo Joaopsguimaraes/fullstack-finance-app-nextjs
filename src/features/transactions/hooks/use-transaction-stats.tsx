@@ -5,7 +5,7 @@ import { useListTransactions } from './use-list-transactions'
 
 export function useTransactionStats() {
   const { data } = useListTransactions()
-  const transactions = useMemo(() => data || [], [data])
+  const transactions = useMemo(() => data?.data || [], [data])
 
   const stats = useMemo(() => {
     const income = transactions

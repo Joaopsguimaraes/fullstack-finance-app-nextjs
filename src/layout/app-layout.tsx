@@ -1,6 +1,6 @@
 import { type Session } from 'next-auth'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { type PropsWithChildren } from 'react'
-
 import { LayoutProvider } from './layout-provider'
 
 type Props = Readonly<
@@ -10,5 +10,9 @@ type Props = Readonly<
 >
 
 export function AppLayout({ children, session }: Props) {
-  return <LayoutProvider user={session.user}>{children}</LayoutProvider>
+  return (
+    <LayoutProvider user={session.user}>
+      <NuqsAdapter>{children}</NuqsAdapter>
+    </LayoutProvider>
+  )
 }

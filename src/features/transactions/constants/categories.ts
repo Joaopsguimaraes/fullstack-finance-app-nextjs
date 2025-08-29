@@ -10,6 +10,10 @@ export const categoriesOptions = [
     value: CATEGORIES_ENUM.TRANSPORT,
   },
   {
+    label: 'Entertainment',
+    value: CATEGORIES_ENUM.ENTERTAINMENT,
+  },
+  {
     label: 'Utilities',
     value: CATEGORIES_ENUM.UTILITIES,
   },

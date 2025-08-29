@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
   TableBody,
@@ -19,94 +20,134 @@ import {
 } from '@/components/ui/table'
 import { useListTransactions } from '@/features/transactions/hooks/use-list-transactions'
 import { useTransactionForm } from '@/features/transactions/hooks/use-transaction-form'
+import { useTransactionPagination } from '@/features/transactions/hooks/use-transaction-pagination'
 import type { Transaction } from '@/lib/schemas'
 import { formatCurrency } from '@/utils/format-currency'
-import { format } from 'date-fns'
-import { ArrowDown, ArrowUp, Edit, MoreHorizontal, Trash2 } from 'lucide-react'
-import { useMemo } from 'react'
+import {
+  ArrowDownIcon,
+  ArrowUpDownIcon,
+  ArrowUpIcon,
+  Edit,
+  MoreHorizontal,
+  Trash2,
+} from 'lucide-react'
+import { useCallback, useMemo } from 'react'
 import { categoryIcons } from '../constants/category-icons'
 import { getCategoryColor } from '../helpers/get-category-color'
+import { useTransactionsTable } from '../hooks/use-transactions-table'
+import { FilterTransactions } from './filter-transactions'
+import { TransactionsPagination } from './transactions-pagination'
 
 export function TransactionTable() {
-  const { data } = useListTransactions()
+  const {
+    params,
+    urlParams,
+    setPage,
+    setLimit,
+    setFilters,
+    setSorting,
+    resetFilters,
+  } = useTransactionPagination()
+  const { data, isLoading, isFetching, isPlaceholderData } =
+    useListTransactions(params)
   const { openEditForm, openDeleteDialog } = useTransactionForm()
-  const transactions = useMemo(() => data || [], [data])
+  const { formatDateDisplay, getAccountDisplay, getTransactionIcon } =
+    useTransactionsTable()
 
-  const getAccountDisplay = (transaction: Transaction) => {
-    if (transaction.bankAccount) {
-      return {
-        name: transaction.bankAccount.name,
-        type: transaction.bankAccount.type,
+  const transactions = useMemo(() => data?.data || [], [data])
+
+  const handleSort = useCallback(
+    (column: 'date' | 'amount' | 'description') => {
+      if (urlParams.sortBy === column) {
+        setSorting(column, urlParams.sortOrder === 'asc' ? 'desc' : 'asc')
+      } else {
+        setSorting(column, 'desc')
       }
-    }
+    },
+    [urlParams.sortBy, urlParams.sortOrder, setSorting]
+  )
 
-    return {
-      name: 'Unknown Account',
-      type: 'CHECKING',
-    }
-  }
+  const getSortIcon = useCallback(
+    (column: string) => {
+      if (urlParams.sortBy !== column) {
+        return <ArrowUpDownIcon className='ml-2 h-4 w-4' />
+      }
+      return urlParams.sortOrder === 'asc' ? (
+        <ArrowUpIcon className='ml-2 h-4 w-4' />
+      ) : (
+        <ArrowDownIcon className='ml-2 h-4 w-4' />
+      )
+    },
+    [urlParams.sortBy, urlParams.sortOrder]
+  )
 
-  const getTransactionIcon = (type: string) => {
-    return type === 'INCOME' ? (
-      <ArrowUp className='h-4 w-4 text-green-600' />
-    ) : (
-      <ArrowDown className='h-4 w-4 text-red-600' />
+  const handleEdit = useCallback(
+    (transaction: Transaction) => {
+      openEditForm(transaction)
+    },
+    [openEditForm]
+  )
+
+  const handleDelete = useCallback(
+    (transaction: Transaction) => {
+      openDeleteDialog(transaction)
+    },
+    [openDeleteDialog]
+  )
+
+  if (isLoading) {
+    return (
+      <Card className='bg-background border-border w-full'>
+        <CardHeader>
+          <Skeleton className='h-10 w-full' />
+        </CardHeader>
+        <CardContent className='space-y-6'>
+          <div className='space-y-2'>
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className='h-16 w-full' />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     )
-  }
-
-  const formatDateDisplay = (date: string | Date) => {
-    return format(
-      typeof date === 'string' ? new Date(date) : date,
-      'MMM dd, yyyy'
-    )
-  }
-
-  const handleEdit = (transaction: Transaction) => {
-    openEditForm(transaction)
-  }
-
-  const handleDelete = (transaction: Transaction) => {
-    openDeleteDialog(transaction)
   }
 
   return (
     <Card className='bg-background border-border w-full'>
-      <CardHeader></CardHeader>
+      <CardHeader>
+        <FilterTransactions
+          filters={urlParams}
+          onFiltersChange={setFilters}
+          onReset={resetFilters}
+        />
+      </CardHeader>
       <CardContent className='space-y-6'>
-        <div className='border-border overflow-hidden rounded-lg border'>
+        <div
+          className={`border-border overflow-hidden rounded-lg border ${isFetching && !isPlaceholderData ? 'opacity-60' : ''}`}
+        >
           <Table>
             <TableHeader>
               <TableRow className='bg-muted/50'>
+                <TableHead>Type</TableHead>
                 <TableHead>
                   <Button
                     variant='ghost'
                     className='h-auto p-0 font-semibold hover:bg-transparent'
-                  >
-                    Type
-                  </Button>
-                </TableHead>
-                <TableHead>
-                  <Button
-                    variant='ghost'
-                    className='h-auto p-0 font-semibold hover:bg-transparent'
+                    onClick={() => handleSort('description')}
                   >
                     Description
+                    {getSortIcon('description')}
                   </Button>
                 </TableHead>
+                <TableHead>Category</TableHead>
                 <TableHead>
                   <Button
                     variant='ghost'
                     className='h-auto p-0 font-semibold hover:bg-transparent'
-                  >
-                    Category
-                  </Button>
-                </TableHead>
-                <TableHead>
-                  <Button
-                    variant='ghost'
-                    className='h-auto p-0 font-semibold hover:bg-transparent'
+                    onClick={() => handleSort('amount')}
                   >
                     Amount
+                    {getSortIcon('amount')}
                   </Button>
                 </TableHead>
                 <TableHead>Account</TableHead>
@@ -114,19 +155,13 @@ export function TransactionTable() {
                   <Button
                     variant='ghost'
                     className='h-auto p-0 font-semibold hover:bg-transparent'
+                    onClick={() => handleSort('date')}
                   >
                     Date
+                    {getSortIcon('date')}
                   </Button>
                 </TableHead>
-                <TableHead className='w-12'>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant='ghost' size='sm'>
-                        <MoreHorizontal className='h-4 w-4' />
-                      </Button>
-                    </DropdownMenuTrigger>
-                  </DropdownMenu>
-                </TableHead>
+                <TableHead className='w-12'>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -225,6 +260,14 @@ export function TransactionTable() {
             </TableBody>
           </Table>
         </div>
+
+        {data?.pagination && (
+          <TransactionsPagination
+            pagination={data.pagination}
+            onPageChange={setPage}
+            onLimitChange={setLimit}
+          />
+        )}
       </CardContent>
     </Card>
   )

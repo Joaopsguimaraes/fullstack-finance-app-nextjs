@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createErrorResponse } from '@/helpers/create-error-response'
 import { createSuccessResponse } from '@/helpers/create-success-response'
 import { withAuth } from '@/lib/api-middleware'
@@ -47,26 +48,100 @@ export const POST = withAuth(async (request, { user }) => {
   }
 })
 
-export const GET = withAuth(async (_, { user }) => {
+export const GET = withAuth(async (request, { user }) => {
   try {
-    const result = await prisma.transaction.findMany({
-      where: {
-        userId: user.id,
-      },
-      include: {
-        bankAccount: {
-          select: {
-            id: true,
-            name: true,
-            type: true,
+    const { searchParams } = new URL(request.url)
+
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '10')
+    const skip = (page - 1) * limit
+
+    const type = searchParams.get('type')
+    const category = searchParams.get('category')
+    const search = searchParams.get('search')
+    const sortBy = searchParams.get('sortBy') || 'date'
+    const sortOrder = searchParams.get('sortOrder') || 'desc'
+    const startDate = searchParams.get('startDate')
+    const endDate = searchParams.get('endDate')
+    const accountId = searchParams.get('accountId')
+
+    const where: any = {
+      userId: user.id,
+    }
+
+    if (type && type !== 'all') {
+      where.type = type
+    }
+
+    if (category && category !== 'all') {
+      where.category = category
+    }
+
+    if (accountId && accountId !== 'all') {
+      where.bankAccountId = accountId
+    }
+
+    if (search) {
+      where.description = {
+        contains: search,
+        mode: 'insensitive',
+      }
+    }
+
+    if (startDate || endDate) {
+      where.date = {}
+      if (startDate) {
+        where.date.gte = new Date(startDate)
+      }
+      if (endDate) {
+        where.date.lte = new Date(endDate)
+      }
+    }
+
+    const orderBy: any = {}
+    if (sortBy === 'amount') {
+      orderBy.amount = sortOrder
+    } else if (sortBy === 'description') {
+      orderBy.description = sortOrder
+    } else {
+      orderBy.date = sortOrder
+    }
+
+    const [transactions, totalCount] = await Promise.all([
+      prisma.transaction.findMany({
+        where,
+        include: {
+          bankAccount: {
+            select: {
+              id: true,
+              name: true,
+              type: true,
+            },
           },
         },
-      },
-      orderBy: { date: 'desc' },
-    })
+        orderBy,
+        skip,
+        take: limit,
+      }),
+      prisma.transaction.count({ where }),
+    ])
+
+    const totalPages = Math.ceil(totalCount / limit)
+    const hasNextPage = page < totalPages
+    const hasPreviousPage = page > 1
 
     return createSuccessResponse(
-      result,
+      {
+        transactions,
+        pagination: {
+          page,
+          limit,
+          totalCount,
+          totalPages,
+          hasNextPage,
+          hasPreviousPage,
+        },
+      },
       200,
       'Transactions retrieved successfully'
     )

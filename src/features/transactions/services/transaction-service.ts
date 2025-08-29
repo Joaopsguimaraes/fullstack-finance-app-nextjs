@@ -4,19 +4,33 @@ import type {
   Transactions,
   UpdateTransaction,
 } from '@/lib/schemas'
+import type { PaginatedResponse, PaginationParams } from '../types/pagination'
 
 const API_BASE_URL = '/api/transaction'
 
 export class TransactionService {
-  static async getTransactions(): Promise<Transactions[]> {
-    const response = await fetch(API_BASE_URL)
+  static async getTransactions(
+    params: PaginationParams = { page: 1, limit: 10 }
+  ): Promise<PaginatedResponse<Transactions>> {
+    const searchParams = new URLSearchParams()
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        searchParams.append(key, String(value))
+      }
+    })
+
+    const response = await fetch(`${API_BASE_URL}?${searchParams.toString()}`)
     if (!response.ok) {
       throw new Error('Failed to fetch transactions')
     }
 
-    const transactions = await response.json()
+    const result = await response.json()
 
-    return transactions.data as Transactions[]
+    return {
+      data: result.data.transactions as Transactions[],
+      pagination: result.data.pagination,
+    }
   }
   static async getTransaction(id: string): Promise<Transaction> {
     const response = await fetch(`${API_BASE_URL}/${id}`)
