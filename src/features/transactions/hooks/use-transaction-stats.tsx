@@ -2,12 +2,10 @@ import { formatCurrency } from '@/utils/format-currency'
 import { CreditCard, DollarSign, TrendingDown, TrendingUp } from 'lucide-react'
 import { useMemo } from 'react'
 import { useListTransactions } from './use-list-transactions'
-import { useTransactionFilters } from './use-transaction-filters'
 
 export function useTransactionStats() {
-  const { filters } = useTransactionFilters()
-  const { data } = useListTransactions(filters)
-  const transactions = useMemo(() => data?.transactions || [], [data])
+  const { data } = useListTransactions()
+  const transactions = useMemo(() => data || [], [data])
 
   const stats = useMemo(() => {
     const income = transactions
@@ -34,21 +32,21 @@ export function useTransactionStats() {
       title: 'Total Income',
       value: formatCurrency(stats.income),
       icon: <TrendingUp className='h-4 w-4' />,
-      color: 'text-green-600',
+      color: 'text-foreground',
       bgColor: 'bg-green-100 dark:bg-green-900/20',
     },
     {
       title: 'Total Expenses',
       value: formatCurrency(stats.expenses),
       icon: <TrendingDown className='h-4 w-4' />,
-      color: 'text-red-600',
+      color: 'text-foreground',
       bgColor: 'bg-red-100 dark:bg-red-900/20',
     },
     {
       title: 'Net Balance',
       value: formatCurrency(Math.abs(stats.balance)),
       icon: <DollarSign className='h-4 w-4' />,
-      color: stats.balance >= 0 ? 'text-green-600' : 'text-red-600',
+      color: stats.balance >= 0 ? 'text-foreground' : 'text-foreground',
       bgColor:
         stats.balance >= 0
           ? 'bg-green-100 dark:bg-green-900/20'
@@ -58,7 +56,7 @@ export function useTransactionStats() {
       title: 'Total Transactions',
       value: stats.totalTransactions.toString(),
       icon: <CreditCard className='h-4 w-4' />,
-      color: 'text-blue-600',
+      color: 'text-foreground',
       bgColor: 'bg-blue-100 dark:bg-blue-900/20',
     },
   ]

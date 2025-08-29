@@ -1,8 +1,8 @@
 'use client'
 
+import type { Transaction } from '@/lib/schemas'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useMemo } from 'react'
-import type { Transaction } from '@/lib/schemas'
 
 export interface TransactionFormState {
   isFormOpen: boolean
@@ -13,15 +13,11 @@ export interface TransactionFormState {
   }
 }
 
-/**
- * Hook to manage transaction form state using URL search params
- */
 export const useTransactionForm = () => {
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
 
-  // Parse current form state from URL
   const formState = useMemo(() => {
     const params = new URLSearchParams(searchParams)
 
@@ -39,22 +35,19 @@ export const useTransactionForm = () => {
     }
   }, [searchParams])
 
-  // Update URL with form state
   const updateFormState = useCallback(
     (updates: Partial<TransactionFormState>) => {
       const params = new URLSearchParams(searchParams)
 
-      // Handle form open/close
       if (updates.isFormOpen !== undefined) {
         if (updates.isFormOpen) {
           params.set('form', 'open')
         } else {
           params.delete('form')
-          params.delete('edit') // Clear edit data when closing form
+          params.delete('edit')
         }
       }
 
-      // Handle editing transaction
       if (updates.editingTransaction !== undefined) {
         if (updates.editingTransaction) {
           params.set(
@@ -67,7 +60,6 @@ export const useTransactionForm = () => {
         }
       }
 
-      // Handle delete dialog
       if (updates.deleteDialog !== undefined) {
         if (updates.deleteDialog.isOpen) {
           params.set('delete', 'open')
@@ -90,7 +82,6 @@ export const useTransactionForm = () => {
     [searchParams, router, pathname]
   )
 
-  // Open form for creating new transaction
   const openCreateForm = useCallback(() => {
     updateFormState({
       isFormOpen: true,
@@ -98,7 +89,6 @@ export const useTransactionForm = () => {
     })
   }, [updateFormState])
 
-  // Open form for editing transaction
   const openEditForm = useCallback(
     (transaction: Transaction) => {
       updateFormState({
@@ -109,7 +99,6 @@ export const useTransactionForm = () => {
     [updateFormState]
   )
 
-  // Close form
   const closeForm = useCallback(() => {
     updateFormState({
       isFormOpen: false,
@@ -117,7 +106,6 @@ export const useTransactionForm = () => {
     })
   }, [updateFormState])
 
-  // Open delete dialog
   const openDeleteDialog = useCallback(
     (transaction: Transaction) => {
       updateFormState({
@@ -130,7 +118,6 @@ export const useTransactionForm = () => {
     [updateFormState]
   )
 
-  // Close delete dialog
   const closeDeleteDialog = useCallback(() => {
     updateFormState({
       deleteDialog: {

@@ -37,7 +37,7 @@ export function Sidebar({ user, isOpen, onClose }: Props) {
 
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 flex flex-col border-r bg-zinc-100 transition-all duration-300 ease-in-out lg:static lg:translate-x-0',
+          'bg-accent fixed inset-y-0 left-0 z-50 flex flex-col border-r transition-all duration-300 ease-in-out lg:static lg:translate-x-0',
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
           isCollapsed ? 'w-20' : 'w-64'
         )}

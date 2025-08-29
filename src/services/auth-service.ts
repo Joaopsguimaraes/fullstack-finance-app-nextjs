@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import type { RegisterData } from '@/lib/schemas'
 import bcrypt from 'bcryptjs'
 import { GenericError } from '../helpers/generic-error'
+import { BankAccountService } from './bank-account-service'
 import { SessionService } from './session-service'
 
 export class AuthService {
@@ -10,7 +11,9 @@ export class AuthService {
       const existingUser = await this.emailExists(data.email)
 
       if (existingUser) {
-        new GenericError('An account with this email address already exists')
+        throw new GenericError(
+          'An account with this email address already exists'
+        )
       }
 
       const hashedPassword = await bcrypt.hash(data.password, 12)
@@ -29,6 +32,8 @@ export class AuthService {
         },
       })
 
+      await BankAccountService.createDefaultWallet(user.id)
+
       return user
     } catch (error) {
       console.error('User registration failed:', {
@@ -41,7 +46,7 @@ export class AuthService {
         throw error
       }
 
-      new GenericError('Failed to create user account. Please try again.')
+      throw new GenericError('Failed to create user account. Please try again.')
     }
   }
 
@@ -66,6 +71,9 @@ export class AuthService {
       if (!isPasswordValid) {
         return null
       }
+
+      // Ensure user has a default wallet (for existing users who might not have one)
+      await BankAccountService.ensureDefaultWallet(user.id)
 
       return {
         id: user.id,
@@ -98,7 +106,7 @@ export class AuthService {
 
       if (!validation) return null
 
-      return await prisma.user.findUnique({
+      const user = await prisma.user.findUnique({
         where: { id: validation.user.id },
         select: {
           id: true,
@@ -108,6 +116,13 @@ export class AuthService {
           updatedAt: true,
         },
       })
+
+      if (user) {
+        // Ensure user has a default wallet
+        await BankAccountService.ensureDefaultWallet(user.id)
+      }
+
+      return user
     } catch (error) {
       console.error('Get current authenticated user error:', error)
       return null

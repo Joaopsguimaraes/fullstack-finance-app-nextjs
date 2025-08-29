@@ -21,7 +21,7 @@ export function TransactionStats() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${stat.color}`}>
+            <div className={`text-2xl font-medium ${stat.color}`}>
               {stat.title === 'Net Balance' && stats.balance < 0 && '-'}
               {stat.value}
             </div>

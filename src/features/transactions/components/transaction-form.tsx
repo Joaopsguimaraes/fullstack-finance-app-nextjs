@@ -29,24 +29,22 @@ import { useTransactionForm } from '@/features/transactions/hooks/use-transactio
 import { createTransactionSchema, type CreateTransaction } from '@/lib/schemas'
 import { formatCurrency } from '@/utils/format-currency'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Calendar, DollarSign, FileText, Tag } from 'lucide-react'
+import { Calendar, DollarSign, FileText, Tag, Wallet } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { categoriesOptions } from '../constants/categories'
 import { transactionTypes } from '../constants/transaction-type'
+import { useBankAccounts } from '../hooks/use-bank-accounts'
 import { useCreateTransaction } from '../hooks/use-create-transaction'
 import { useUpdateTransaction } from '../hooks/use-update-transaction'
-
-const mockAccounts = [
-  { id: '1', name: 'Checking Account', balance: 0, type: 'CHECKING' },
-  { id: '2', name: 'Savings Account', balance: 0, type: 'SAVINGS' },
-]
 
 export function TransactionForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const { formState, closeForm } = useTransactionForm()
   const createTransaction = useCreateTransaction()
   const updateTransaction = useUpdateTransaction()
+  const { data: bankAccounts = [], isLoading: isLoadingAccounts } =
+    useBankAccounts()
   const { editingTransaction, isFormOpen: isOpen } = formState
   const mode = editingTransaction ? 'edit' : 'create'
 
@@ -58,7 +56,7 @@ export function TransactionForm() {
       category: 'OTHER',
       type: 'EXPENSE',
       date: new Date(),
-      accountId: mockAccounts[0]?.id || '',
+      accountId: '',
     },
   })
 
@@ -91,7 +89,7 @@ export function TransactionForm() {
     }
   }
 
-  // Reset form when editing transaction changes
+  // Reset form when editing transaction changes or accounts load
   useEffect(() => {
     if (editingTransaction) {
       form.reset({
@@ -102,17 +100,18 @@ export function TransactionForm() {
         date: new Date(editingTransaction.date),
         accountId: editingTransaction.accountId,
       })
-    } else {
+    } else if (bankAccounts.length > 0) {
+      // Set default account to first available (Wallet should be first)
       form.reset({
         amount: '',
         description: '',
         category: 'OTHER',
         type: 'EXPENSE',
         date: new Date(),
-        accountId: mockAccounts[0]?.id || '',
+        accountId: bankAccounts[0]?.id || '',
       })
     }
-  }, [editingTransaction, form])
+  }, [editingTransaction, bankAccounts, form])
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -235,23 +234,45 @@ export function TransactionForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Account</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder='Select account' />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {mockAccounts.map(account => (
-                        <SelectItem key={account.id} value={account.id}>
-                          {account.name} ({formatCurrency(account.balance)})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className='relative'>
+                    <Wallet className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform' />
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      disabled={isLoadingAccounts}
+                    >
+                      <FormControl>
+                        <SelectTrigger className='pl-10'>
+                          <SelectValue
+                            placeholder={
+                              isLoadingAccounts
+                                ? 'Loading accounts...'
+                                : 'Select account'
+                            }
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {bankAccounts
+                          .filter(account => account.id)
+                          .map(account => (
+                            <SelectItem key={account.id} value={account.id!}>
+                              <div className='flex items-center gap-2'>
+                                <span>{account.name}</span>
+                                <span className='text-muted-foreground text-sm'>
+                                  ({account.type})
+                                </span>
+                                {account.balance !== undefined && (
+                                  <span className='text-muted-foreground text-sm'>
+                                    - {formatCurrency(account.balance)}
+                                  </span>
+                                )}
+                              </div>
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

@@ -1,36 +1,27 @@
 import { createErrorResponse, createSuccessResponse } from '@/helpers'
 import { withAuthDynamic } from '@/lib/api-middleware'
 import { prisma } from '@/lib/prisma'
-import { updateTransactionSchema } from '@/lib/schemas'
+import { updateBankAccountSchema } from '@/lib/schemas'
 
 export const GET = withAuthDynamic(async (_: Request, { user }, { params }) => {
   try {
     const { id } = await params
 
-    const transaction = await prisma.transaction.findUnique({
+    const bankAccount = await prisma.bankAccount.findUnique({
       where: {
         id,
         userId: user.id,
       },
-      include: {
-        bankAccount: {
-          select: {
-            id: true,
-            name: true,
-            type: true,
-          },
-        },
-      },
     })
 
-    if (!transaction) {
-      return createErrorResponse('Transaction not found', 404)
+    if (!bankAccount) {
+      return createErrorResponse('Bank account not found', 404)
     }
 
     return createSuccessResponse(
-      transaction,
+      bankAccount,
       200,
-      'Transaction retrieved successfully'
+      'Bank account retrieved successfully'
     )
   } catch (reason) {
     const message = reason instanceof Error ? reason.message : 'Unknown error'
@@ -43,50 +34,29 @@ export const PUT = withAuthDynamic(
     try {
       const { id } = await params
       const body = await request.json()
-      const validatedData = updateTransactionSchema.parse({ id, ...body })
+      const validatedData = updateBankAccountSchema.parse({ id, ...body })
 
-      if (validatedData.accountId) {
-        const bankAccount = await prisma.bankAccount.findUnique({
-          where: {
-            id: validatedData.accountId,
-            userId: user.id,
-          },
-        })
+      const { balance: _balance, ...updateData } = validatedData
 
-        if (!bankAccount) {
-          return createErrorResponse('Bank account not found', 404)
-        }
-      }
-
-      const { description, type, amount, category, date, accountId } =
-        validatedData
-
-      const updatedTransaction = await prisma.transaction.update({
+      const updatedBankAccount = await prisma.bankAccount.update({
         where: {
           id,
           userId: user.id,
         },
-        data: {
-          description,
-          type,
-          amount: Number(amount),
-          category,
-          date,
-          bankAccountId: accountId,
-        },
+        data: updateData,
       })
 
       return createSuccessResponse(
-        updatedTransaction,
+        updatedBankAccount,
         200,
-        'Transaction updated successfully'
+        'Bank account updated successfully'
       )
     } catch (reason) {
       if (
         reason instanceof Error &&
         reason.message.includes('Record to update not found')
       ) {
-        return createErrorResponse('Transaction not found', 404)
+        return createErrorResponse('Bank account not found', 404)
       }
 
       const message = reason instanceof Error ? reason.message : 'Unknown error'
@@ -100,7 +70,38 @@ export const DELETE = withAuthDynamic(
     try {
       const { id } = await params
 
-      await prisma.transaction.delete({
+      // Check if this is the default wallet
+      const bankAccount = await prisma.bankAccount.findUnique({
+        where: {
+          id,
+          userId: user.id,
+        },
+      })
+
+      if (!bankAccount) {
+        return createErrorResponse('Bank account not found', 404)
+      }
+
+      // Prevent deletion of default wallet
+      if (bankAccount.name === 'Wallet' && bankAccount.type === 'CHECKING') {
+        return createErrorResponse('Cannot delete default wallet account', 400)
+      }
+
+      // Check if account has transactions
+      const transactionCount = await prisma.transaction.count({
+        where: {
+          bankAccountId: id,
+        },
+      })
+
+      if (transactionCount > 0) {
+        return createErrorResponse(
+          'Cannot delete account with existing transactions',
+          400
+        )
+      }
+
+      await prisma.bankAccount.delete({
         where: {
           id,
           userId: user.id,
@@ -113,7 +114,7 @@ export const DELETE = withAuthDynamic(
         reason instanceof Error &&
         reason.message.includes('Record to delete does not exist')
       ) {
-        return createErrorResponse('Transaction not found', 404)
+        return createErrorResponse('Bank account not found', 404)
       }
 
       const message = reason instanceof Error ? reason.message : 'Unknown error'
