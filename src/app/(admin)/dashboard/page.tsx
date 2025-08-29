@@ -19,5 +19,11 @@ export default async function DashboardPage() {
     dashboardData.recentTransactions
   )
 
-  return <Dashboard stats={stats} recentTransactions={recentTransactions} />
+  return (
+    <Dashboard
+      stats={stats}
+      recentTransactions={recentTransactions}
+      chartData={dashboardData.chartData}
+    />
+  )
 }

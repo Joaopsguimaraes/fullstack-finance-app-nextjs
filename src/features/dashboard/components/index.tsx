@@ -1,5 +1,6 @@
 export { Dashboard } from './dashboard'
 export { DashboardHeader } from './dashboard-header'
+export { IncomeExpenseChart } from './income-expense-chart'
+export { RecentTransactions } from './recent-transactions'
 export { StatCard } from './stat-card'
 export { StatCards } from './stat-cards'
-export { RecentTransactions } from './recent-transactions'

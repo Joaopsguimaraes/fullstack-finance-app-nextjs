@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import type { Transactions } from '@/lib/schemas'
 import type { DashboardStats, DashboardTransaction } from '../types'
+import { ChartDataService, type MonthlyData } from './chart-data-service'
 
 export class DashboardService {
   static async getCurrentMonthTransactions(): Promise<Transactions[]> {
@@ -118,9 +119,14 @@ export class DashboardService {
     transactions: Transactions[]
     stats: DashboardStats[]
     recentTransactions: DashboardTransaction[]
+    chartData: MonthlyData[]
   }> {
     try {
-      const transactions = await this.getCurrentMonthTransactions()
+      const [transactions, chartDataResult] = await Promise.all([
+        this.getCurrentMonthTransactions(),
+        ChartDataService.getMonthlyIncomeExpenseData(),
+      ])
+
       const stats = this.calculateStats(transactions)
       const recentTransactions =
         this.transformToRecentTransactions(transactions)
@@ -129,6 +135,7 @@ export class DashboardService {
         transactions,
         stats,
         recentTransactions,
+        chartData: chartDataResult.monthlyData,
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
@@ -144,6 +151,7 @@ export class DashboardService {
         transactions: [],
         stats: this.getEmptyStats(),
         recentTransactions: [],
+        chartData: [],
       }
     }
   }

@@ -1,4 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -18,11 +24,8 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
   return (
     <Card className='bg-card border-border'>
       <CardHeader>
-        <div className='flex items-center justify-between'>
-          <CardTitle className='text-foreground text-xl font-semibold'>
-            Recent Transactions
-          </CardTitle>
-        </div>
+        <CardTitle>Recent Transactions</CardTitle>
+        <CardDescription>Here are the most recent transactions</CardDescription>
       </CardHeader>
       <CardContent>
         <div className='border-border rounded-md border'>
