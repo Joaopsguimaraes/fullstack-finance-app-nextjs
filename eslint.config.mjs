@@ -2,28 +2,19 @@ import { FlatCompat } from '@eslint/eslintrc'
 import js from '@eslint/js'
 
 const compat = new FlatCompat({
-  // import.meta.dirname is available after Node.js v20.11.0
   baseDirectory: import.meta.dirname,
   recommendedConfig: js.configs.recommended,
 })
 
 const eslintConfig = [
-  // Base JavaScript recommended rules
   js.configs.recommended,
-
-  // Next.js and TypeScript configurations
   ...compat.config({
-    extends: [
-      'next/core-web-vitals',
-      'next/typescript',
-      'prettier', // Must be last to override conflicting rules
-    ],
+    extends: ['next/core-web-vitals', 'next/typescript', 'prettier'],
   }),
-
-  // Global ignores
   {
     ignores: [
       'node_modules/**',
+      'prisma/**',
       '.next/**',
       'out/**',
       'build/**',
@@ -34,11 +25,8 @@ const eslintConfig = [
       'coverage/**',
     ],
   },
-
-  // Custom rules configuration
   {
     rules: {
-      // TypeScript specific rules
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
@@ -57,28 +45,20 @@ const eslintConfig = [
           fixStyle: 'inline-type-imports',
         },
       ],
-
-      // React specific rules
       'react/prop-types': 'off',
       'react/react-in-jsx-scope': 'off',
       'react/no-unescaped-entities': 'warn',
       'react-hooks/exhaustive-deps': 'warn',
       'react-hooks/rules-of-hooks': 'error',
-
-      // Next.js specific rules
       '@next/next/no-img-element': 'error',
       '@next/next/no-page-custom-font': 'error',
-
-      // General JavaScript rules
-      'no-unused-vars': 'off', // Handled by TypeScript rule
+      'no-unused-vars': 'off',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-debugger': 'error',
       'prefer-const': 'error',
       'no-var': 'error',
       'object-shorthand': 'error',
       'prefer-template': 'error',
-
-      // Import rules
       'sort-imports': [
         'error',
         {
@@ -91,8 +71,6 @@ const eslintConfig = [
       ],
     },
   },
-
-  // Specific overrides for different file types
   {
     files: ['**/*.test.{js,ts,tsx}', '**/*.spec.{js,ts,tsx}'],
     rules: {

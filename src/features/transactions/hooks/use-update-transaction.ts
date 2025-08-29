@@ -1,7 +1,7 @@
 import { type UpdateTransaction } from '@/lib/schemas'
+import { notify } from '@/lib/toast'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { TransactionService } from '../services/transaction-service'
-import { showToast } from '@/lib/toast'
 import { transactionKeys } from './transaction-key'
 
 export const useUpdateTransaction = () => {
@@ -11,7 +11,7 @@ export const useUpdateTransaction = () => {
     mutationFn: ({ id, data }: { id: string; data: UpdateTransaction }) =>
       TransactionService.updateTransaction(id, data),
     onSuccess: updatedTransaction => {
-      showToast.success('Transaction updated successfully')
+      notify.success('Transaction updated successfully')
       queryClient.setQueryData(
         transactionKeys.detail(updatedTransaction.id!),
         updatedTransaction
@@ -22,7 +22,7 @@ export const useUpdateTransaction = () => {
       })
     },
     onError: error => {
-      showToast.error('Failed to update transaction', {
+      notify.error('Failed to update transaction', {
         description:
           error instanceof Error
             ? error.message

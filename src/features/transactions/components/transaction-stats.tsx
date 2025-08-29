@@ -15,7 +15,7 @@ export function TransactionStats() {
               {stat.title}
             </CardTitle>
             <div
-              className={`h-8 w-8 rounded-full ${stat.bgColor} flex items-center justify-center`}
+              className={`flex h-8 w-8 items-center justify-center rounded-full`}
             >
               <div className={stat.color}>{stat.icon}</div>
             </div>

@@ -1,8 +1,8 @@
-import { Suspense } from 'react'
-import dynamic from 'next/dynamic'
 import { LoadingCard } from '@/components/ui/loading-states'
+import dynamic from 'next/dynamic'
+import { Suspense } from 'react'
 
-const EnhancedTransactions = dynamic(
+const Transactions = dynamic(
   () =>
     import('@/features/transactions/components/transactions').then(mod => ({
       default: mod.Transactions,
@@ -19,7 +19,7 @@ export default function TransactionsPage() {
         <LoadingCard variant='spinner' description='Loading transactions...' />
       }
     >
-      <EnhancedTransactions />
+      <Transactions />
     </Suspense>
   )
 }

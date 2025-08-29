@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2024",
+    "target": "es2022",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -28,6 +28,6 @@
     "node_modules",
     "dist",
     //exclude prisma generated files
-    "src/prisma/*"
+    "src/prisma"
   ]
 }

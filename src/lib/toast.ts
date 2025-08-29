@@ -1,6 +1,6 @@
 import { toast } from 'sonner'
 
-export interface ToastOptions {
+export interface NotifyOptions {
   description?: string
   duration?: number
   action?: {
@@ -9,8 +9,8 @@ export interface ToastOptions {
   }
 }
 
-export class ToastManager {
-  static success(message: string, options?: ToastOptions): void {
+export class NotifyManager {
+  static success(message: string, options?: NotifyOptions): void {
     toast.success(message, {
       description: options?.description,
       duration: options?.duration,
@@ -18,7 +18,7 @@ export class ToastManager {
     })
   }
 
-  static error(message: string, options?: ToastOptions): void {
+  static error(message: string, options?: NotifyOptions): void {
     toast.error(message, {
       description: options?.description,
       duration: options?.duration,
@@ -26,7 +26,7 @@ export class ToastManager {
     })
   }
 
-  static warning(message: string, options?: ToastOptions): void {
+  static warning(message: string, options?: NotifyOptions): void {
     toast.warning(message, {
       description: options?.description,
       duration: options?.duration,
@@ -34,7 +34,7 @@ export class ToastManager {
     })
   }
 
-  static info(message: string, options?: ToastOptions): void {
+  static info(message: string, options?: NotifyOptions): void {
     toast.info(message, {
       description: options?.description,
       duration: options?.duration,
@@ -42,7 +42,7 @@ export class ToastManager {
     })
   }
 
-  static loading(message: string, options?: ToastOptions): string | number {
+  static loading(message: string, options?: NotifyOptions): string | number {
     return toast.loading(message, {
       description: options?.description,
       duration: options?.duration,
@@ -54,11 +54,11 @@ export class ToastManager {
   }
 }
 
-export const showToast = {
-  success: ToastManager.success,
-  error: ToastManager.error,
-  warning: ToastManager.warning,
-  info: ToastManager.info,
-  loading: ToastManager.loading,
-  dismiss: ToastManager.dismiss,
+export const notify = {
+  success: NotifyManager.success,
+  error: NotifyManager.error,
+  warning: NotifyManager.warning,
+  info: NotifyManager.info,
+  loading: NotifyManager.loading,
+  dismiss: NotifyManager.dismiss,
 }

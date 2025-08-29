@@ -1,102 +1,107 @@
+'use client'
+
+import { ChevronRight, CoinsIcon, TrendingUp, X } from 'lucide-react'
+import { type Session } from 'next-auth'
+import { usePathname } from 'next/navigation'
+import { useEffect } from 'react'
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { LogOut, X } from 'lucide-react'
-import { navigationItems } from './navigation-items'
-import { memo, useCallback, useState } from 'react'
-import { ButtonColapseSidebar } from './button-collapse-sidebar'
-import { type Session } from 'next-auth'
+import { useLayout } from '.'
+import { getUserInitials } from '../utils/get-user-initials'
+import { SidebarNavigation } from './sidebar-navigation'
 
-interface SidebarProps {
-  readonly user: Session['user']
+interface Props {
+  user: Session['user']
+  isOpen: boolean
+  onClose: () => void
 }
 
-export const Sidebar = memo(function Sidebar({ user }: SidebarProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+export function Sidebar({ user, isOpen, onClose }: Props) {
+  const { isCollapsed, handleToggleCollapse } = useLayout()
+  const pathname = usePathname()
 
-  const handleSidebarToggle = useCallback((value: boolean) => {
-    setSidebarOpen(value)
-  }, [])
-
-  const handleLogout = useCallback(() => {
-    console.log('Logging out...')
-  }, [])
-
-  const handleCloseSidebar = useCallback(() => {
-    setSidebarOpen(false)
-  }, [setSidebarOpen])
+  useEffect(() => {
+    onClose()
+  }, [pathname, onClose])
 
   return (
     <>
-      <ButtonColapseSidebar
-        sidebarOpen={sidebarOpen}
-        handleSidebarToggle={handleSidebarToggle}
-      />
-      <div
+      {isOpen && (
+        <div
+          className='fixed inset-0 z-40 bg-black/50 lg:hidden'
+          onClick={onClose}
+        />
+      )}
+
+      <aside
         className={cn(
-          'bg-card fixed inset-y-0 left-0 z-50 w-64 transform border-r transition-transform duration-200 ease-in-out lg:static lg:inset-0 lg:translate-x-0',
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          'fixed inset-y-0 left-0 z-50 flex flex-col border-r bg-zinc-100 transition-all duration-300 ease-in-out lg:static lg:translate-x-0',
+          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+          isCollapsed ? 'w-20' : 'w-64'
         )}
       >
-        <div className='flex h-full flex-col'>
-          {/* Header */}
-          <div className='flex h-16 items-center justify-between border-b px-6'>
-            <h1 className='text-primary text-xl font-bold'>Finance App</h1>
-            <Button
-              variant='ghost'
-              size='icon'
-              className='lg:hidden'
-              onClick={handleCloseSidebar}
-            >
-              <X className='h-5 w-5' />
-            </Button>
-          </div>
-
-          {/* User info */}
-          <div className='border-b px-6 py-4'>
-            <div className='flex items-center space-x-3'>
-              <div className='bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full'>
-                <span className='text-primary font-semibold'>
-                  {user?.name ? user.name[0] : 'U'}
-                  {user?.email}
-                </span>
+        <div className='flex h-16 items-center justify-between border-b px-4'>
+          {!isCollapsed && (
+            <div className='flex items-center space-x-2'>
+              <div className='bg-primary flex h-8 w-8 items-center justify-center rounded-lg'>
+                {
+                  // TODO: Implements application logo here
+                }
+                <CoinsIcon className='text-primary-foreground h-5 w-5' />
               </div>
-              <div className='flex-1'>
-                <p className='font-medium'>{user?.name}</p>
-                <p className='text-muted-foreground text-sm'>{user?.email}</p>
-              </div>
+              <span className='text-primary text-lg font-bold'>Finances</span>
             </div>
-          </div>
+          )}
 
-          {/* Navigation */}
-          <nav className='flex-1 space-y-2 px-4 py-6'>
-            {navigationItems.map(item => {
-              const Icon = item.icon
-              return (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className='text-muted-foreground hover:text-foreground hover:bg-accent flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors'
-                >
-                  <Icon className='h-5 w-5' />
-                  <span>{item.name}</span>
-                </a>
-              )
-            })}
-          </nav>
-
-          {/* Logout */}
-          <div className='border-t p-4'>
-            <Button
-              variant='ghost'
-              className='text-muted-foreground hover:text-foreground w-full justify-start'
-              onClick={handleLogout}
+          {isCollapsed && (
+            <div
+              onClick={handleToggleCollapse}
+              className='bg-primary flex items-center justify-center rounded-lg p-3'
             >
-              <LogOut className='mr-3 h-5 w-5' />
-              Logout
+              <CoinsIcon className='text-primary-foreground h-4 w-4' />
+            </div>
+          )}
+
+          <Button
+            variant='ghost'
+            size='icon'
+            className='lg:hidden'
+            onClick={onClose}
+          >
+            <X className='h-5 w-5' />
+          </Button>
+
+          {/* Desktop collapse toggle */}
+          <Button
+            variant='ghost'
+            size='icon'
+            className='hidden lg:flex'
+            onClick={handleToggleCollapse}
+          >
+            {!isCollapsed && <ChevronRight className='h-4 w-4' />}
+          </Button>
+        </div>
+        {isCollapsed && (
+          <div className='flex justify-center border-b p-2'>
+            <Avatar className='h-8 w-8'>
+              <AvatarImage src={user?.image || undefined} />
+              <AvatarFallback className='bg-primary/10 text-primary text-xs'>
+                {getUserInitials(user?.name)}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+        )}
+        <SidebarNavigation />
+        {isCollapsed && (
+          <div className='flex justify-center p-2'>
+            <Button size='icon' variant='ghost' className='h-8 w-8'>
+              <TrendingUp className='h-4 w-4' />
             </Button>
           </div>
-        </div>
-      </div>
+        )}
+      </aside>
     </>
   )
-})
+}

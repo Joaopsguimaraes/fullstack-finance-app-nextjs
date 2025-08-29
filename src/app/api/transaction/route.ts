@@ -1,82 +1,39 @@
-import { auth } from '@/lib/auth'
+import {
+  createErrorResponse,
+  createSuccessResponse,
+  withAuth,
+} from '@/lib/api-middleware'
 import { prisma } from '@/lib/prisma'
 import { createTransactionSchema } from '@/lib/schemas'
 
-export async function POST(request: Request) {
-  const session = await auth()
-
-  if (!session?.user) {
-    return new Response(JSON.stringify({ message: 'Unauthorized' }), {
-      status: 401,
-    })
-  }
-
+export const POST = withAuth(async (request, { user }) => {
   try {
     const body = await request.json()
     const validatedData = createTransactionSchema.parse(body)
 
-    if (!session.user.email) {
-      return new Response(JSON.stringify({ message: 'Unauthorized' }), {
-        status: 401,
-      })
-    }
-
-    const user = await prisma.user.findUnique({
-      where: {
-        email: session.user.email,
-      },
-    })
-
-    if (!user) {
-      return new Response(JSON.stringify({ message: 'user not found' }), {
-        status: 404,
-      })
-    }
-
     const result = await prisma.transaction.create({
       data: {
         ...validatedData,
+        bankAccountId: '', // TODO: Implements Bank account
         amount: Number(validatedData.amount),
-        userId: user?.id,
+        userId: user.id,
       },
     })
 
-    return new Response(JSON.stringify(result), { status: 201 })
+    return createSuccessResponse(
+      result,
+      201,
+      'Transaction created successfully'
+    )
   } catch (reason) {
     const message = reason instanceof Error ? reason.message : 'Unknown error'
-    return new Response(JSON.stringify({ message }), { status: 500 })
+    return createErrorResponse(message, 500)
   }
-}
+})
 
-export async function GET(request: Request) {
-  const session = await auth()
-
-  if (!session?.user) {
-    return new Response(JSON.stringify({ message: 'Unauthorized' }), {
-      status: 401,
-    })
-  }
-
+export const GET = withAuth(async (request, { user }) => {
   try {
     const { searchParams } = new URL(request.url)
-
-    if (!session.user.email) {
-      return new Response(JSON.stringify({ message: 'Unauthorized' }), {
-        status: 401,
-      })
-    }
-
-    const user = await prisma.user.findUnique({
-      where: {
-        email: session.user.email,
-      },
-    })
-
-    if (!user) {
-      return new Response(JSON.stringify({ message: 'user not found' }), {
-        status: 404,
-      })
-    }
 
     // Parse query parameters
     const page = parseInt(searchParams.get('page') || '1')
@@ -89,7 +46,7 @@ export async function GET(request: Request) {
     const skip = (page - 1) * limit
 
     // Build where clause
-    const where: any = {
+    const where: Record<string, unknown> = {
       userId: user.id,
     }
 
@@ -115,15 +72,6 @@ export async function GET(request: Request) {
         orderBy: { date: 'desc' },
         skip,
         take: limit,
-        include: {
-          account: {
-            select: {
-              id: true,
-              name: true,
-              type: true,
-            },
-          },
-        },
       }),
       prisma.transaction.count({ where }),
     ])
@@ -139,9 +87,13 @@ export async function GET(request: Request) {
       totalPages,
     }
 
-    return new Response(JSON.stringify(result), { status: 200 })
+    return createSuccessResponse(
+      result,
+      200,
+      'Transactions retrieved successfully'
+    )
   } catch (reason) {
     const message = reason instanceof Error ? reason.message : 'Unknown error'
-    return new Response(JSON.stringify({ message }), { status: 500 })
+    return createErrorResponse(message, 500)
   }
-}
+})

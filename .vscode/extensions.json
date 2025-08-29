@@ -37,20 +37,17 @@
     // Color highlighting
     "naumovs.color-highlight",
 
-    // Indent rainbow
-    "oderwat.indent-rainbow",
-
     // TODO highlighting
     "wayou.vscode-todo-highlight",
 
-    // Thunder Client for API testing
-    "rangav.vscode-thunder-client",
+    // ESLint plugin for advanced linting support
+    "github.vscode-eslint",
 
+    // tailwindcss plugin for classNames
+    "bradlc.vscode-tailwindcss",
     // Prisma support
     "prisma.prisma",
 
-    // Error lens for inline error display
-    "usernamehw.errorlens"
   ],
   "unwantedRecommendations": [
     "ms-vscode.vscode-json"

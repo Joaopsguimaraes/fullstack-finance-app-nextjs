@@ -3,7 +3,7 @@ export function DashboardHeader() {
     <div className='flex items-center justify-between'>
       <div>
         <h1 className='text-foreground text-3xl font-bold tracking-tight'>
-          Finance Dashboard
+          Dashboard
         </h1>
         <p className='text-muted-foreground'>
           Track your income, expenses, and financial goals

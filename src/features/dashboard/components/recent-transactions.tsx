@@ -1,7 +1,5 @@
-import { MoreHorizontal, Send } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -10,8 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { type DashboardTransaction } from '../types'
 import { formatCurrency, formatDate } from '../helpers/utils'
+import { type DashboardTransaction } from '../types'
 
 interface RecentTransactionsProps {
   transactions: DashboardTransaction[]
@@ -25,10 +23,6 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
           <CardTitle className='text-foreground text-xl font-semibold'>
             Recent Transactions
           </CardTitle>
-          <Button variant='outline' size='sm'>
-            <Send className='mr-2 h-4 w-4' />
-            New Transaction
-          </Button>
         </div>
       </CardHeader>
       <CardContent>
@@ -51,8 +45,8 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                     <div
                       className={`flex h-8 w-8 items-center justify-center rounded-full ${
                         transaction.type === 'income'
-                          ? 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400'
-                          : 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
+                          ? 'bg-zinc-50 text-green-600'
+                          : 'bg-zinc-50 text-red-600'
                       }`}
                     >
                       {transaction.icon}
@@ -80,11 +74,6 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                       {transaction.type === 'income' ? '+' : '-'}
                       {formatCurrency(transaction.amount)}
                     </span>
-                  </TableCell>
-                  <TableCell>
-                    <Button variant='ghost' size='sm'>
-                      <MoreHorizontal className='h-4 w-4' />
-                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

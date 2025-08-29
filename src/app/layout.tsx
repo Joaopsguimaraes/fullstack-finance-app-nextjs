@@ -1,13 +1,13 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import { QueryProvider } from '@/providers/query-provider'
-import { SessionProvider } from '@/providers/session-provider'
 import { SonnerProvider } from '@/components/ui/sonner'
 import { ThemeProvider } from '@/components/ui/theme-provider'
+import { QueryProvider } from '@/providers/query-provider'
+import { SessionProvider } from '@/providers/session-provider'
+import type { Metadata } from 'next'
+import { Open_Sans } from 'next/font/google'
 import './globals.css'
 
-const interSans = Inter({
-  variable: '--font-geist-sans',
+const openSans = Open_Sans({
+  variable: '--font-sans',
   subsets: ['latin'],
 })
 
@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en' suppressHydrationWarning>
-      <body className={`${interSans.variable} antialiased`}>
+      <body className={`${openSans.variable} antialiased`}>
         <ThemeProvider
           attribute='class'
           defaultTheme='light'

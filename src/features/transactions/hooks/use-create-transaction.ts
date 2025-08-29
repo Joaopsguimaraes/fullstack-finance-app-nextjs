@@ -1,7 +1,7 @@
 import { type CreateTransaction } from '@/lib/schemas'
+import { notify } from '@/lib/toast'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { TransactionService } from '../services/transaction-service'
-import { showToast } from '@/lib/toast'
 import { transactionKeys } from './transaction-key'
 
 export const useCreateTransaction = () => {
@@ -11,13 +11,13 @@ export const useCreateTransaction = () => {
     mutationFn: (data: CreateTransaction) =>
       TransactionService.createTransaction(data),
     onSuccess: () => {
-      showToast.success('Transaction created successfully')
+      notify.success('Transaction created successfully')
       queryClient.invalidateQueries({
         queryKey: transactionKeys.lists(),
       })
     },
     onError: error => {
-      showToast.error('Failed to create transaction', {
+      notify.error('Failed to create transaction', {
         description:
           error instanceof Error
             ? error.message

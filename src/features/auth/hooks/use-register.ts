@@ -18,9 +18,9 @@ export function useRegister() {
   }
 
   const onSubmit = async (data: RegisterData) => {
-    const result = await register(data)
-    console.log(result)
-    router.push('/auth/signin')
+    await register(data).then(() => {
+      router.push('/auth/signin')
+    })
   }
 
   return {

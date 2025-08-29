@@ -1,5 +1,5 @@
-import { ArrowDownRight, ArrowUpRight } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ArrowDownRight, ArrowUpRight } from 'lucide-react'
 import { type StatCardProps } from '../types'
 
 export function StatCard({ title, value, change, icon }: StatCardProps) {
