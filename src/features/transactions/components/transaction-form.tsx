@@ -1,3 +1,4 @@
+/* eslint-disable sort-imports */
 'use client'
 
 import { Button } from '@/components/ui/button'
@@ -8,14 +9,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import {
   Form,
   FormControl,
@@ -24,17 +17,25 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { type CreateTransaction, createTransactionSchema } from '@/lib/schemas'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useTransactionForm } from '@/features/transactions/hooks/use-transaction-form'
-import { formatCurrency } from '@/lib/utils'
+import { createTransactionSchema, type CreateTransaction } from '@/lib/schemas'
+import { formatCurrency } from '@/utils/format-currency'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, DollarSign, FileText, Tag } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { categoriesOptions } from '../constants/categories'
+import { transactionTypes } from '../constants/transaction-type'
 import { useCreateTransaction } from '../hooks/use-create-transaction'
 import { useUpdateTransaction } from '../hooks/use-update-transaction'
-import { transactionTypes } from '../constants/transaction-type'
-import { categoriesOptions } from '../constants/categories'
 
 const mockAccounts = [
   { id: '1', name: 'Checking Account', balance: 0, type: 'CHECKING' },

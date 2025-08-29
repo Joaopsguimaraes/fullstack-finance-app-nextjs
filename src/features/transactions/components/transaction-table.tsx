@@ -35,7 +35,7 @@ import { useListTransactions } from '@/features/transactions/hooks/use-list-tran
 import { useTransactionFilters } from '@/features/transactions/hooks/use-transaction-filters'
 import { useTransactionForm } from '@/features/transactions/hooks/use-transaction-form'
 import type { Transaction } from '@/lib/schemas'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency } from '@/utils/format-currency'
 import { format } from 'date-fns'
 import {
   ArrowDown,

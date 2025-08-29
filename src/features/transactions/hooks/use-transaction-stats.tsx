@@ -1,8 +1,8 @@
+import { formatCurrency } from '@/utils/format-currency'
+import { CreditCard, DollarSign, TrendingDown, TrendingUp } from 'lucide-react'
 import { useMemo } from 'react'
 import { useListTransactions } from './use-list-transactions'
 import { useTransactionFilters } from './use-transaction-filters'
-import { formatCurrency } from '@/lib/utils'
-import { CreditCard, DollarSign, TrendingDown, TrendingUp } from 'lucide-react'
 
 export function useTransactionStats() {
   const { filters } = useTransactionFilters()

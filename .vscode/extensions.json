@@ -28,9 +28,6 @@
     // Path intellisense
     "christian-kohler.path-intellisense",
 
-    // Auto import support
-    "steoates.autoimport",
-
     // Better comments
     "aaron-bond.better-comments",
 

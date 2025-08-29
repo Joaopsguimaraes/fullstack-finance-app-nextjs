@@ -19,10 +19,10 @@ export function HeroSection() {
 
   return (
     <div className='relative hidden flex-1 overflow-hidden lg:flex'>
-      <div className='absolute inset-0 bg-gradient-to-br from-zinc-600 via-green-700 to-zinc-800' />
+      <div className='absolute inset-0 bg-gradient-to-br from-zinc-600 via-purple-700 to-zinc-800' />
       <div className='absolute inset-0'>
-        <div className='animate-blob absolute top-0 -left-4 h-72 w-72 rounded-full bg-green-500/30 opacity-70 mix-blend-screen blur-xl filter' />
-        <div className='animate-blob animation-delay-2000 absolute top-0 -right-4 h-72 w-72 rounded-full bg-green-500/30 opacity-70 mix-blend-screen blur-xl filter' />
+        <div className='animate-blob absolute top-0 -left-4 h-72 w-72 rounded-full bg-purple-500/30 opacity-70 mix-blend-screen blur-xl filter' />
+        <div className='animate-blob animation-delay-2000 absolute top-0 -right-4 h-72 w-72 rounded-full bg-purple-500/30 opacity-70 mix-blend-screen blur-xl filter' />
         <div className='animate-blob animation-delay-4000 absolute -bottom-8 left-20 h-72 w-72 rounded-full bg-zinc-500/50 opacity-70 mix-blend-screen blur-xl filter' />
       </div>
       <div className='absolute inset-0 opacity-20'>
@@ -33,8 +33,8 @@ export function HeroSection() {
         >
           <defs>
             <linearGradient id='gradient1' x1='0%' y1='0%' x2='100%' y2='100%'>
-              <stop offset='0%' stopColor='#002551' stopOpacity='0.3' />
-              <stop offset='100%' stopColor='#001051' stopOpacity='0.1' />
+              <stop offset='0%' stopColor='#FFFF' stopOpacity='0.3' />
+              <stop offset='100%' stopColor='#CCCC' stopOpacity='0.1' />
             </linearGradient>
           </defs>
           <path
@@ -51,7 +51,7 @@ export function HeroSection() {
           <div className='space-y-4'>
             <h2 className='text-4xl leading-tight font-bold text-white lg:text-5xl'>
               Take Control of Your{' '}
-              <span className='bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'>
+              <span className='bg-gradient-to-r from-yellow-400 to-yellow-500 bg-clip-text text-transparent'>
                 Finances
               </span>
             </h2>
