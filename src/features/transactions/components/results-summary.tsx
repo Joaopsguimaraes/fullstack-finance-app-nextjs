@@ -1,8 +1,8 @@
 'use client'
 
-import { formatCurrency } from '@/lib/utils'
 import { useListTransactions } from '@/features/transactions/hooks/use-list-transactions'
 import { useTransactionFilters } from '@/features/transactions/hooks/use-transaction-filters'
+import { formatCurrency } from '@/utils'
 import { useMemo } from 'react'
 
 export function ResultsSummary() {
