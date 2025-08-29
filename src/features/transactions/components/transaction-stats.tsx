@@ -25,11 +25,6 @@ export function TransactionStats() {
               {stat.title === 'Net Balance' && stats.balance < 0 && '-'}
               {stat.value}
             </div>
-            <p className='text-muted-foreground mt-1 text-xs'>
-              {stat.title === 'Total Transactions'
-                ? 'Based on current filters'
-                : 'Current period total'}
-            </p>
           </CardContent>
         </Card>
       ))}

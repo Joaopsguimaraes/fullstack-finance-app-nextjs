@@ -1,4 +1,3 @@
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -45,8 +44,8 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                     <div
                       className={`flex h-8 w-8 items-center justify-center rounded-full ${
                         transaction.type === 'income'
-                          ? 'bg-zinc-50 text-green-600'
-                          : 'bg-zinc-50 text-red-600'
+                          ? 'bg-accent text-green-600'
+                          : 'bg-accent text-red-600'
                       }`}
                     >
                       {transaction.icon}
@@ -55,11 +54,7 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                   <TableCell className='text-foreground font-medium'>
                     {transaction.description}
                   </TableCell>
-                  <TableCell>
-                    <Badge variant='secondary' className='text-xs'>
-                      {transaction.category}
-                    </Badge>
-                  </TableCell>
+                  <TableCell>{transaction.category}</TableCell>
                   <TableCell className='text-muted-foreground'>
                     {formatDate(transaction.date)}
                   </TableCell>

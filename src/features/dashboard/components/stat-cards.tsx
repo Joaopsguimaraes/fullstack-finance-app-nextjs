@@ -1,5 +1,5 @@
-import { StatCard } from './stat-card'
 import { type DashboardStats } from '../types'
+import { StatCard } from './stat-card'
 
 interface StatCardsProps {
   stats: DashboardStats[]
@@ -13,7 +13,6 @@ export function StatCards({ stats }: StatCardsProps) {
           key={index}
           title={stat.title}
           value={stat.value}
-          change={stat.change}
           icon={stat.icon}
         />
       ))}

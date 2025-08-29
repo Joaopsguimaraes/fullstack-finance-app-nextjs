@@ -78,8 +78,8 @@ function TransactionsPaginationComponent({
       </div>
 
       <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6'>
-        <div className='flex items-center gap-2'>
-          <span className='text-muted-foreground text-sm'>Items p/page:</span>
+        <div className='flex min-w-sm items-center justify-end gap-2'>
+          <span className='text-muted-foreground text-sm'>Items per page:</span>
           <Select
             value={String(limit)}
             onValueChange={value => onLimitChange(Number(value))}

@@ -1,9 +1,8 @@
+/* eslint-disable sort-imports */
+import type { TransactionCategory } from '@/lib/schemas'
+
+import { getIcon, type IconName } from '../constants/icons'
 import { type DashboardStats, type DashboardTransaction } from '../types'
-import { type IconName, getIcon } from '../constants/icons'
-import {
-  MOCK_DASHBOARD_STATS_DATA,
-  MOCK_RECENT_TRANSACTIONS_DATA,
-} from '../constants'
 
 interface RawStatsData {
   title: string
@@ -20,6 +19,35 @@ interface RawTransactionData {
   category: string
   date: string
   iconName: IconName
+}
+
+function getCategoryIcon(category: TransactionCategory | string): IconName {
+  const categoryIconMap: Record<string, IconName> = {
+    FOOD: 'ShoppingCart',
+    TRANSPORT: 'Car',
+    ENTERTAINMENT: 'MoreHorizontal',
+    UTILITIES: 'Zap',
+    HEALTH: 'Heart',
+    EDUCATION: 'BookOpen',
+    DEBTS: 'CreditCard',
+    SALARY: 'DollarSign',
+    FREELANCE: 'Receipt',
+    INVESTMENTS: 'TrendingUp',
+    OTHER: 'MoreHorizontal',
+  }
+
+  return categoryIconMap[category] || 'MoreHorizontal'
+}
+
+function getStatIcon(title: string): IconName {
+  const statIconMap: Record<string, IconName> = {
+    'Total Balance': 'DollarSign',
+    'Monthly Income': 'TrendingUp',
+    'Monthly Expenses': 'TrendingDown',
+    'Savings Rate': 'CreditCard',
+  }
+
+  return statIconMap[title] || 'DollarSign'
 }
 
 export function transformStatsData(rawData: RawStatsData[]): DashboardStats[] {
@@ -45,10 +73,20 @@ export function transformTransactionData(
   }))
 }
 
-// Pre-transformed data exports for convenience
-export const MOCK_DASHBOARD_STATS = transformStatsData(
-  MOCK_DASHBOARD_STATS_DATA
-)
-export const MOCK_RECENT_TRANSACTIONS = transformTransactionData(
-  MOCK_RECENT_TRANSACTIONS_DATA
-)
+export function transformApiStatsData(
+  statsData: Omit<DashboardStats, 'icon'>[]
+): DashboardStats[] {
+  return statsData.map(stat => ({
+    ...stat,
+    icon: getIcon(getStatIcon(stat.title)),
+  }))
+}
+
+export function transformApiTransactionData(
+  transactionsData: Omit<DashboardTransaction, 'icon'>[]
+): DashboardTransaction[] {
+  return transactionsData.map(transaction => ({
+    ...transaction,
+    icon: getIcon(getCategoryIcon(transaction.category)),
+  }))
+}
