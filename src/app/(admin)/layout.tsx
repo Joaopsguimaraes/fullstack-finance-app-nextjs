@@ -4,6 +4,8 @@ import { type Session } from 'next-auth'
 import { redirect } from 'next/navigation'
 import type { PropsWithChildren } from 'react'
 
+export const dynamic = 'force-dynamic'
+
 export default async function Layout({ children }: PropsWithChildren) {
   const session: Session | null = await auth()
 

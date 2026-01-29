@@ -2,9 +2,9 @@ import { auth } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 
 /**
- * Middleware for handling authentication and route protection
+ * Proxy for handling authentication and route protection
  *
- * This middleware:
+ * This proxy:
  * - Protects private routes by redirecting unauthenticated users to sign-in
  * - Prevents authenticated users from accessing auth pages
  * - Allows public access to landing page and API routes
@@ -45,7 +45,7 @@ export default auth(req => {
 })
 
 /**
- * Configure which routes the middleware should run on
+ * Configure which routes the proxy should run on
  *
  * Matches all request paths except:
  * - API routes (/api/*)

@@ -5,7 +5,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Account {
@@ -39,13 +38,13 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String
-  email         String   @unique
-  image         String?
-  password      String
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  image     String?
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   accounts     Account[]
   sessions     Session[]

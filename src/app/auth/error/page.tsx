@@ -100,7 +100,7 @@ function AuthErrorContent() {
               href='/auth/signup'
               className='text-muted-foreground hover:text-primary text-sm'
             >
-              Don't have an account? Sign up
+              Don&apos;t have an account? Sign up
             </Link>
           </div>
         </CardFooter>

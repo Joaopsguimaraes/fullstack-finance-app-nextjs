@@ -1,16 +1,13 @@
-import { FlatCompat } from '@eslint/eslintrc'
 import js from '@eslint/js'
-
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-  recommendedConfig: js.configs.recommended,
-})
+import nextVitals from 'eslint-config-next/core-web-vitals'
+import nextTs from 'eslint-config-next/typescript'
+import prettier from 'eslint-config-prettier'
 
 const eslintConfig = [
   js.configs.recommended,
-  ...compat.config({
-    extends: ['next/core-web-vitals', 'next/typescript', 'prettier'],
-  }),
+  ...nextVitals,
+  ...nextTs,
+  prettier,
   {
     ignores: [
       'node_modules/**',
@@ -79,7 +76,7 @@ const eslintConfig = [
     },
   },
   {
-    files: ['**/*.config.{js,ts,mjs}', '**/middleware.ts'],
+    files: ['**/*.config.{js,ts,mjs}', '**/proxy.ts'],
     rules: {
       '@typescript-eslint/no-var-requires': 'off',
       'no-console': 'off',

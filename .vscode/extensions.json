@@ -3,48 +3,30 @@
     // Essential for code formatting and linting
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
-
     // TypeScript and JavaScript support
     "ms-vscode.vscode-typescript-next",
-
     // React and JSX support
     "ms-vscode.vscode-react-javascript",
-
     // Tailwind CSS support
     "bradlc.vscode-tailwindcss",
-
     // Next.js support
     "ms-vscode.vscode-nextjs",
-
-    // Git integration
-    "eamodio.gitlens",
-
     // Auto rename paired HTML/JSX tags
     "formulahendry.auto-rename-tag",
-
-    // Bracket pair colorization
-    "coenraads.bracket-pair-colorizer-2",
-
     // Path intellisense
     "christian-kohler.path-intellisense",
-
     // Better comments
     "aaron-bond.better-comments",
-
     // Color highlighting
     "naumovs.color-highlight",
-
     // TODO highlighting
     "wayou.vscode-todo-highlight",
-
     // ESLint plugin for advanced linting support
     "github.vscode-eslint",
-
     // tailwindcss plugin for classNames
     "bradlc.vscode-tailwindcss",
     // Prisma support
     "prisma.prisma",
-
   ],
   "unwantedRecommendations": [
     "ms-vscode.vscode-json"
