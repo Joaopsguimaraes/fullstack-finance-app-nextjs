@@ -29,9 +29,6 @@ export const POST = withAuth(async (request, { user }) => {
 
 export const GET = withAuth(async (request, { user }) => {
   try {
-    const { searchParams } = new URL(request.url)
-    const includeBalance = searchParams.get('includeBalance') === 'true'
-
     const bankAccounts = await prisma.bankAccount.findMany({
       where: {
         userId: user.id,
@@ -40,7 +37,7 @@ export const GET = withAuth(async (request, { user }) => {
         id: true,
         name: true,
         type: true,
-        balance: includeBalance,
+        balance: true,
         userId: true,
       },
       orderBy: [{ name: 'asc' }],

@@ -1,3 +1,5 @@
+import { AccountBalancesAsync } from '@/features/dashboard/components/account-balances-async'
+import { AccountBalancesSkeleton } from '@/features/dashboard/components/account-balances-skeleton'
 import { ChartAsync } from '@/features/dashboard/components/chart-async'
 import { ChartSkeleton } from '@/features/dashboard/components/chart-skeleton'
 import { DashboardHeader } from '@/features/dashboard/components/dashboard-header'
@@ -14,6 +16,10 @@ export default function DashboardPage() {
 
       <Suspense fallback={<StatCardsSkeleton />}>
         <StatCardsAsync />
+      </Suspense>
+
+      <Suspense fallback={<AccountBalancesSkeleton />}>
+        <AccountBalancesAsync />
       </Suspense>
 
       <div className='grid gap-6 md:grid-cols-2'>

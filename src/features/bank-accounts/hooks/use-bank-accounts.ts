@@ -1,5 +1,6 @@
 import type { BankAccount } from '@/lib/schemas'
 import { useQuery } from '@tanstack/react-query'
+import { bankAccountKeys } from './bank-account-keys'
 
 interface BankAccountsResponse {
   data: BankAccount[]
@@ -19,7 +20,7 @@ async function fetchBankAccounts(): Promise<BankAccount[]> {
 
 export function useBankAccounts() {
   return useQuery({
-    queryKey: ['bankAccounts'],
+    queryKey: bankAccountKeys.list(),
     queryFn: fetchBankAccounts,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes

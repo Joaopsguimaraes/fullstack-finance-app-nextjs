@@ -25,16 +25,35 @@ export const POST = withAuth(async (request, { user }) => {
       return createErrorResponse('Bank account not found', 404)
     }
 
-    const result = await prisma.transaction.create({
-      data: {
-        description: validatedData.data.description,
-        type: validatedData.data.type,
-        amount: Number(validatedData.data.amount),
-        category: validatedData.data.category,
-        date: validatedData.data.date,
-        bankAccountId: validatedData.data.accountId, // TODO refactor this schema from accountId to bankAccountId
-        userId: user.id,
-      },
+    const amount = Number(validatedData.data.amount)
+    const balanceChange =
+      validatedData.data.type === 'INCOME' ? amount : -amount
+
+    const result = await prisma.$transaction(async (tx) => {
+      // Create the transaction
+      const transaction = await tx.transaction.create({
+        data: {
+          description: validatedData.data.description,
+          type: validatedData.data.type,
+          amount,
+          category: validatedData.data.category,
+          date: validatedData.data.date,
+          bankAccountId: validatedData.data.accountId, // TODO refactor this schema from accountId to bankAccountId
+          userId: user.id,
+        },
+      })
+
+      // Update the bank account balance
+      await tx.bankAccount.update({
+        where: { id: validatedData.data.accountId },
+        data: {
+          balance: {
+            increment: balanceChange,
+          },
+        },
+      })
+
+      return transaction
     })
 
     return createSuccessResponse(

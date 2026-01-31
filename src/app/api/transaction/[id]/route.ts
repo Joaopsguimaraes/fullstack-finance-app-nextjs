@@ -69,8 +69,9 @@ export const PUT = withAuthDynamic(
         bankAccountId: accountId,
       }
 
+      let parsedAmount: number | undefined
       if (amount) {
-        const parsedAmount = parseFloat(
+        parsedAmount = parseFloat(
           typeof amount === 'string'
             ? amount.replace(',', '.').replace(/[^0-9.-]+/g, '')
             : amount
@@ -81,14 +82,55 @@ export const PUT = withAuthDynamic(
         data['amount'] = parsedAmount
       }
 
-      const updatedTransaction = await prisma.transaction.update({
-        where: {
-          id,
-          userId: user.id,
-        },
-        data: {
-          ...data,
-        },
+      const updatedTransaction = await prisma.$transaction(async (tx) => {
+        // Get the old transaction to reverse its balance effect
+        const oldTransaction = await tx.transaction.findUnique({
+          where: { id, userId: user.id },
+        })
+
+        if (!oldTransaction) {
+          throw new Error('Transaction not found')
+        }
+
+        // Update the transaction
+        const updated = await tx.transaction.update({
+          where: { id, userId: user.id },
+          data: { ...data },
+        })
+
+        // Calculate balance changes
+        const oldAmount = oldTransaction.amount
+        const newAmount = parsedAmount ?? oldAmount
+        const oldType = oldTransaction.type
+        const newType = type ?? oldType
+        const oldAccountId = oldTransaction.bankAccountId
+        const newAccountId = accountId ?? oldAccountId
+
+        const oldBalanceEffect = oldType === 'INCOME' ? oldAmount : -oldAmount
+        const newBalanceEffect = newType === 'INCOME' ? newAmount : -newAmount
+
+        if (oldAccountId === newAccountId) {
+          // Same account: apply the net change
+          const netChange = newBalanceEffect - oldBalanceEffect
+          if (netChange !== 0) {
+            await tx.bankAccount.update({
+              where: { id: oldAccountId },
+              data: { balance: { increment: netChange } },
+            })
+          }
+        } else {
+          // Different account: reverse old effect and apply new effect
+          await tx.bankAccount.update({
+            where: { id: oldAccountId },
+            data: { balance: { increment: -oldBalanceEffect } },
+          })
+          await tx.bankAccount.update({
+            where: { id: newAccountId },
+            data: { balance: { increment: newBalanceEffect } },
+          })
+        }
+
+        return updated
       })
 
       return createSuccessResponse(
@@ -115,11 +157,31 @@ export const DELETE = withAuthDynamic(
     try {
       const { id } = await params
 
-      await prisma.transaction.delete({
-        where: {
-          id,
-          userId: user.id,
-        },
+      await prisma.$transaction(async (tx) => {
+        // Get the transaction to reverse its balance effect
+        const transaction = await tx.transaction.findUnique({
+          where: { id, userId: user.id },
+        })
+
+        if (!transaction) {
+          throw new Error('Transaction not found')
+        }
+
+        // Delete the transaction
+        await tx.transaction.delete({
+          where: { id, userId: user.id },
+        })
+
+        // Reverse the balance effect
+        const balanceChange =
+          transaction.type === 'INCOME'
+            ? -transaction.amount
+            : transaction.amount
+
+        await tx.bankAccount.update({
+          where: { id: transaction.bankAccountId },
+          data: { balance: { increment: balanceChange } },
+        })
       })
 
       return new Response(null, { status: 204 })

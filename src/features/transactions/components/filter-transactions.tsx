@@ -18,8 +18,8 @@ import {
 import { CalendarIcon, Search, X } from 'lucide-react'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
+import { useBankAccounts } from '@/features/bank-accounts/hooks/use-bank-accounts'
 import { useCategories } from '@/features/categories/hooks/use-categories'
-import { useBankAccounts } from '../hooks/use-bank-accounts'
 
 interface FilterTransactionsProps {
   filters: {
