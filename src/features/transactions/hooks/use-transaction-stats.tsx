@@ -1,10 +1,10 @@
 import { formatCurrency } from '@/utils/format-currency'
 import { CreditCard, DollarSign, TrendingDown, TrendingUp } from 'lucide-react'
 import { useMemo } from 'react'
-import { useListTransactions } from './use-list-transactions'
+import { useTransactionStatsQuery } from './use-transaction-stats-query'
 
 export function useTransactionStats() {
-  const { data } = useListTransactions()
+  const { data } = useTransactionStatsQuery()
   const transactions = useMemo(() => data?.data || [], [data])
 
   const stats = useMemo(() => {

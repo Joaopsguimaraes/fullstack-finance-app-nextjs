@@ -25,14 +25,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { CategorySelector } from '@/features/categories/components/category-selector'
 import { useTransactionForm } from '@/features/transactions/hooks/use-transaction-form'
 import { createTransactionSchema, type CreateTransaction } from '@/lib/schemas'
 import { formatCurrency } from '@/utils/format-currency'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Calendar, DollarSign, FileText, Tag, Wallet } from 'lucide-react'
+import { Calendar, DollarSign, FileText, Wallet } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { categoriesOptions } from '../constants/categories'
 import { transactionTypes } from '../constants/transaction-type'
 import { useBankAccounts } from '../hooks/use-bank-accounts'
 import { useCreateTransaction } from '../hooks/use-create-transaction'
@@ -53,7 +53,7 @@ export function TransactionForm() {
     defaultValues: {
       amount: '',
       description: '',
-      category: 'OTHER',
+      category: '',
       type: 'EXPENSE',
       date: new Date(),
       accountId: '',
@@ -105,14 +105,14 @@ export function TransactionForm() {
       form.reset({
         amount: '',
         description: '',
-        category: 'OTHER',
+        category: '',
         type: 'EXPENSE',
         date: new Date(),
         accountId: bankAccounts[0]?.id || '',
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editingTransaction?.id, bankAccounts.length])
+  }, [editingTransaction?.id, bankAccounts[0]?.id])
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -201,29 +201,13 @@ export function TransactionForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                  <div className='relative'>
-                    <Tag className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform' />
-                    <Select
+                  <FormControl>
+                    <CategorySelector
+                      value={field.value}
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className='pl-10'>
-                          <SelectValue placeholder='Select category' />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {categoriesOptions.map(category => (
-                          <SelectItem
-                            key={category.value}
-                            value={category.value}
-                          >
-                            {category.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                      placeholder='Select category'
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

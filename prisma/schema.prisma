@@ -50,6 +50,7 @@ model User {
   sessions     Session[]
   transactions Transaction[]
   bankAccount  BankAccount[]
+  categories   Category[]
 
   @@map("users")
 }
@@ -73,32 +74,36 @@ model BankAccount {
   @@map("bank_accounts")
 }
 
-enum TransactionCategory {
-  FOOD
-  TRANSPORT
-  ENTERTAINMENT
-  UTILITIES
-  HEALTH
-  EDUCATION
-  DEBTS
-  SALARY
-  FREELANCE
-  INVESTMENTS
-  OTHER
+model Category {
+  id        String   @id @default(uuid())
+  name      String
+  userId    String?  @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user         User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@unique([name, userId])
+  @@index([userId])
+  @@map("categories")
 }
 
 model Transaction {
-  id            String              @id @default(uuid())
+  id            String      @id @default(uuid())
   description   String
   type          String
   amount        Float
-  category      TransactionCategory
-  date          DateTime            @default(now())
-  bankAccountId String              @map("bank_account_id")
-  userId        String              @map("user_id")
+  category      String
+  categoryId    String?     @map("category_id")
+  date          DateTime    @default(now())
+  bankAccountId String      @map("bank_account_id")
+  userId        String      @map("user_id")
 
-  user        User        @relation(fields: [userId], references: [id])
-  bankAccount BankAccount @relation(fields: [bankAccountId], references: [id])
+  user        User         @relation(fields: [userId], references: [id])
+  bankAccount BankAccount  @relation(fields: [bankAccountId], references: [id])
+  categoryRef Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
+  @@index([categoryId])
   @@map("transactions")
 }

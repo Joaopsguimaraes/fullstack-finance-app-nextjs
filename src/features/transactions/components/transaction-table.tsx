@@ -31,14 +31,14 @@ import {
   MoreHorizontal,
   Trash2,
 } from 'lucide-react'
-import { memo, useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { categoryIcons } from '../constants/category-icons'
 import { getCategoryColor } from '../helpers/get-category-color'
 import { useTransactionsTable } from '../hooks/use-transactions-table'
 import { FilterTransactions } from './filter-transactions'
 import { TransactionsPagination } from './transactions-pagination'
 
-function TransactionTableComponent() {
+export function TransactionTable() {
   const {
     params,
     urlParams,
@@ -272,5 +272,3 @@ function TransactionTableComponent() {
     </Card>
   )
 }
-
-export const TransactionTable = memo(TransactionTableComponent)

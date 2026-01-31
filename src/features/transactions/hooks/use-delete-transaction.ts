@@ -11,17 +11,14 @@ export const useDeleteTransaction = () => {
   return useMutation({
     mutationFn: (id: string) => TransactionService.deleteTransaction(id),
     onMutate: async deletedId => {
-      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: transactionKeys.lists() })
 
-      // Snapshot the previous value
       const previousQueries = queryClient.getQueriesData<
         PaginatedResponse<Transactions>
       >({
         queryKey: transactionKeys.lists(),
       })
 
-      // Optimistically update all cached lists
       queryClient.setQueriesData<PaginatedResponse<Transactions>>(
         { queryKey: transactionKeys.lists() },
         old => {
@@ -37,11 +34,9 @@ export const useDeleteTransaction = () => {
         }
       )
 
-      // Return a context object with the snapshotted value
       return { previousQueries }
     },
     onError: (error, _, context) => {
-      // If the mutation fails, use the context returned from onMutate to roll back
       if (context?.previousQueries) {
         context.previousQueries.forEach(([queryKey, data]) => {
           queryClient.setQueryData(queryKey, data)
@@ -62,9 +57,11 @@ export const useDeleteTransaction = () => {
       })
     },
     onSettled: () => {
-      // Always refetch after error or success
       queryClient.invalidateQueries({
         queryKey: transactionKeys.lists(),
+      })
+      queryClient.invalidateQueries({
+        queryKey: transactionKeys.stats(),
       })
     },
   })

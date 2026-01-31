@@ -18,19 +18,21 @@ export const registerSchema = z
     path: ['confirmPassword'],
   })
 
-const transactionCategoryEnum = z.enum([
-  'FOOD',
-  'TRANSPORT',
-  'ENTERTAINMENT',
-  'UTILITIES',
-  'HEALTH',
-  'EDUCATION',
-  'DEBTS',
-  'SALARY',
-  'FREELANCE',
-  'INVESTMENTS',
-  'OTHER',
-])
+const categorySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  userId: z.string().nullable(),
+  createdAt: z.date().or(z.string()),
+  updatedAt: z.date().or(z.string()),
+})
+
+const createCategorySchema = z.object({
+  name: z.string().min(1).max(50),
+})
+
+const updateCategorySchema = z.object({
+  name: z.string().min(1).max(50),
+})
 
 const bankAccountTypeEnum = z.enum([
   'CHECKING',
@@ -70,7 +72,8 @@ const transactionSchema = z.object({
   description: z.string().min(1),
   type: z.union([z.literal('INCOME'), z.literal('EXPENSE')]),
   amount: z.string(),
-  category: transactionCategoryEnum,
+  category: z.string(),
+  categoryId: z.string().optional().nullable(),
   bankAccount: bankAccountSchema.optional(),
   date: z.date().or(z.string()),
   accountId: z.string().min(1),
@@ -89,11 +92,13 @@ const updateTransactionSchema = transactionSchema.partial().extend({
 
 type AuthData = z.infer<typeof authSchema>
 type RegisterData = z.infer<typeof registerSchema>
+type Category = z.infer<typeof categorySchema>
+type CreateCategory = z.infer<typeof createCategorySchema>
+type UpdateCategory = z.infer<typeof updateCategorySchema>
 type Transaction = z.infer<typeof transactionSchema>
 type Transactions = z.infer<typeof transactionSchema>
 type CreateTransaction = z.infer<typeof createTransactionSchema>
 type UpdateTransaction = z.infer<typeof updateTransactionSchema>
-type TransactionCategory = z.infer<typeof transactionCategoryEnum>
 type BankAccount = z.infer<typeof bankAccountSchema>
 type CreateBankAccount = z.infer<typeof createBankAccountSchema>
 type UpdateBankAccount = z.infer<typeof updateBankAccountSchema>
@@ -102,21 +107,26 @@ type BankAccountType = z.infer<typeof bankAccountTypeEnum>
 export {
   bankAccountSchema,
   bankAccountTypeEnum,
+  categorySchema,
   createBankAccountSchema,
+  createCategorySchema,
   createTransactionSchema,
   transactionSchema,
   transactionsSchema,
   updateBankAccountSchema,
+  updateCategorySchema,
   updateTransactionSchema,
   type AuthData,
   type BankAccount,
   type BankAccountType,
+  type Category,
   type CreateBankAccount,
+  type CreateCategory,
   type CreateTransaction,
   type RegisterData,
   type Transaction,
-  type TransactionCategory,
   type Transactions,
   type UpdateBankAccount,
+  type UpdateCategory,
   type UpdateTransaction,
 }

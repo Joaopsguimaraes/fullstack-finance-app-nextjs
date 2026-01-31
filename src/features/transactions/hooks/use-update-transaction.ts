@@ -20,6 +20,9 @@ export const useUpdateTransaction = () => {
       queryClient.invalidateQueries({
         queryKey: transactionKeys.lists(),
       })
+      queryClient.invalidateQueries({
+        queryKey: transactionKeys.stats(),
+      })
     },
     onError: error => {
       notify.error('Failed to update transaction', {

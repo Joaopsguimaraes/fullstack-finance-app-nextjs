@@ -1,6 +1,3 @@
- 
-import type { TransactionCategory } from '@/lib/schemas'
-
 import { type IconName } from '../constants/icons'
 import { type DashboardStats, type DashboardTransaction } from '../types'
 
@@ -21,7 +18,7 @@ interface RawTransactionData {
   iconName: IconName
 }
 
-function getCategoryIcon(category: TransactionCategory | string): IconName {
+function getCategoryIcon(category: string): IconName {
   const categoryIconMap: Record<string, IconName> = {
     FOOD: 'ShoppingCart',
     TRANSPORT: 'Car',

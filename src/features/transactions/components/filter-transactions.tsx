@@ -18,7 +18,7 @@ import {
 import { CalendarIcon, Search, X } from 'lucide-react'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
-import { categoriesOptions } from '../constants/categories'
+import { useCategories } from '@/features/categories/hooks/use-categories'
 import { useBankAccounts } from '../hooks/use-bank-accounts'
 
 interface FilterTransactionsProps {
@@ -40,6 +40,7 @@ function FilterTransactionsComponent({
   onReset,
 }: FilterTransactionsProps) {
   const { data: bankAccounts } = useBankAccounts()
+  const { data: categories = [] } = useCategories()
   const [searchValue, setSearchValue] = useState(filters.search || '')
   const [startDate, setStartDate] = useState<Date | undefined>(
     filters.startDate ? new Date(filters.startDate) : undefined
@@ -55,7 +56,8 @@ function FilterTransactionsComponent({
 
   useEffect(() => {
     debouncedSearch(searchValue)
-  }, [searchValue, debouncedSearch])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchValue])
 
   const handleDateChange = useCallback(
     (type: 'start' | 'end', date: Date | undefined) => {
@@ -125,9 +127,9 @@ function FilterTransactionsComponent({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value='all'>All Categories</SelectItem>
-            {categoriesOptions.map(category => (
-              <SelectItem key={category.value} value={category.value}>
-                {category.label}
+            {categories.map(category => (
+              <SelectItem key={category.id} value={category.name}>
+                {category.name}
               </SelectItem>
             ))}
           </SelectContent>

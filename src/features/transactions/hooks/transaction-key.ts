@@ -6,6 +6,7 @@ export const transactionKeys = {
   lists: () => [...transactionKeys.all, 'list'] as const,
   list: (params?: PaginationParams) =>
     [...transactionKeys.lists(), params] as const,
+  stats: () => [...transactionKeys.all, 'stats'] as const,
   details: () => [...transactionKeys.all, 'detail'] as const,
   detail: (id: string) => [...transactionKeys.details(), id] as const,
 }

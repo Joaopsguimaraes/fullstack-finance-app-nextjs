@@ -15,6 +15,9 @@ export const useCreateTransaction = () => {
       queryClient.invalidateQueries({
         queryKey: transactionKeys.lists(),
       })
+      queryClient.invalidateQueries({
+        queryKey: transactionKeys.stats(),
+      })
     },
     onError: error => {
       notify.error('Failed to create transaction', {

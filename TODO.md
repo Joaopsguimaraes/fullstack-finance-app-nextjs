@@ -1,9 +1,5 @@
 # TODOs at application
 
-- Create functionality to create categories. User should be able to create categories, we can create
-  a seed with those actual values, but user need a possibility to create news or edit. Categories
-  just need a ID and NAME
-
 - Create functionality to create accounts. User should be able to create accounts, we can create a
   seed with those actual values (wallet) but user need a possibility to create new accounts or edit.
   Accounts
@@ -20,5 +16,9 @@
 
 - User should be able to create an installment payment. For example: "Description: New MacBook",
   "isInstallment: Yes (user mark checkbox)", "how many installment? 3 times" after that application
-  create 3 expense, example: "Macbook 1/3", "Macbook 2/3", "Macbook 3/3". Annotation: application
+  create 3 expense, example: "MacBook 1/3", "MacBook 2/3", "MacBook 3/3". Annotation: application
   should add SubFix based on installment
+
+- Update Input to select date component at
+  @src/features/transactions/components/transaction-form.tsx at lines 266 - 291 to use DatePicker,
+  check shadcnUI mcp to get more info.
