@@ -100,7 +100,7 @@ export function TransactionForm() {
         date: new Date(editingTransaction.date),
         accountId: editingTransaction.accountId,
       })
-    } else if (bankAccounts.length > 0) {
+    } else if (bankAccounts.length > 0 && !form.getValues('accountId')) {
       // Set default account to first available (Wallet should be first)
       form.reset({
         amount: '',
@@ -111,7 +111,8 @@ export function TransactionForm() {
         accountId: bankAccounts[0]?.id || '',
       })
     }
-  }, [editingTransaction, bankAccounts, form])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingTransaction?.id, bankAccounts.length])
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>

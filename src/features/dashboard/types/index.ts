@@ -1,3 +1,5 @@
+import type { IconName } from '../constants/icons'
+
 export interface DashboardTransaction {
   id: string
   description: string
@@ -5,17 +7,17 @@ export interface DashboardTransaction {
   type: 'income' | 'expense'
   category: string
   date: string
-  icon: React.ReactNode
+  iconName: IconName
 }
 
 export interface DashboardStats {
   title: string
   value: string
-  icon: React.ReactNode
+  iconName: IconName
 }
 
 export interface StatCardProps {
   title: string
   value: string
-  icon: React.ReactNode
+  iconName: IconName
 }

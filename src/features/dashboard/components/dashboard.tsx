@@ -1,3 +1,5 @@
+'use client'
+
 import { type MonthlyData } from '../services/chart-data-service'
 import { type DashboardStats, type DashboardTransaction } from '../types'
 import { DashboardHeader } from './dashboard-header'

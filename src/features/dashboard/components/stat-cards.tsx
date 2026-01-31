@@ -1,3 +1,5 @@
+'use client'
+
 import { type DashboardStats } from '../types'
 import { StatCard } from './stat-card'
 
@@ -8,12 +10,12 @@ interface StatCardsProps {
 export function StatCards({ stats }: StatCardsProps) {
   return (
     <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-      {stats.map((stat, index) => (
+      {stats.map(stat => (
         <StatCard
-          key={index}
+          key={stat.title}
           title={stat.title}
           value={stat.value}
-          icon={stat.icon}
+          iconName={stat.iconName}
         />
       ))}
     </div>

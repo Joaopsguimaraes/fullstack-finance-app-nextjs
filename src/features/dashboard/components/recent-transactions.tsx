@@ -1,3 +1,5 @@
+'use client'
+
 import {
   Card,
   CardContent,
@@ -13,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { getIcon } from '../constants/icons'
 import { formatCurrency, formatDate } from '../helpers/utils'
 import { type DashboardTransaction } from '../types'
 
@@ -51,7 +54,7 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                           : 'bg-accent text-red-600'
                       }`}
                     >
-                      {transaction.icon}
+                      {getIcon(transaction.iconName)}
                     </div>
                   </TableCell>
                   <TableCell className='text-foreground font-medium'>

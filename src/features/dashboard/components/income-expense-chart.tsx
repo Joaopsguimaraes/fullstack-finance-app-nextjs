@@ -1,7 +1,7 @@
 'use client'
 
 import { TrendingDown, TrendingUp } from 'lucide-react'
-import { useMemo } from 'react'
+import { memo, useMemo } from 'react'
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 
 import {
@@ -27,30 +27,31 @@ interface IncomeExpenseChartProps {
   className?: string
 }
 
-export function IncomeExpenseChart({
+const chartConfig = {
+  income: {
+    label: 'Income',
+    color: 'hsl(var(--chart-1))',
+    theme: {
+      light: '#22c55e', // green-500
+      dark: '#16a34a', // green-600
+    },
+  },
+  expense: {
+    label: 'Despesas',
+    color: 'hsl(var(--chart-2))',
+    theme: {
+      light: '#ef4444', // red-500
+      dark: '#dc2626', // red-600
+    },
+  },
+} as const
+
+function IncomeExpenseChartComponent({
   data,
   title = 'Income vs Expense',
   description = 'Last 6 months',
   className,
 }: IncomeExpenseChartProps) {
-  const chartConfig = {
-    income: {
-      label: 'Income',
-      color: 'hsl(var(--chart-1))',
-      theme: {
-        light: '#22c55e', // green-500
-        dark: '#16a34a', // green-600
-      },
-    },
-    expense: {
-      label: 'Despesas',
-      color: 'hsl(var(--chart-2))',
-      theme: {
-        light: '#ef4444', // red-500
-        dark: '#dc2626', // red-600
-      },
-    },
-  }
 
   const summary = useMemo(() => {
     const totalIncome = data.reduce((sum, month) => sum + month.income, 0)
@@ -147,3 +148,5 @@ export function IncomeExpenseChart({
     </Card>
   )
 }
+
+export const IncomeExpenseChart = memo(IncomeExpenseChartComponent)

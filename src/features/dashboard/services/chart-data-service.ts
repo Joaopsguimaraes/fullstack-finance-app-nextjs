@@ -1,5 +1,6 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { cache } from 'react'
 import { GenericError } from '../../../helpers'
 
 export interface MonthlyData {
@@ -21,7 +22,7 @@ export interface ChartData {
 }
 
 export class ChartDataService {
-  static async getMonthlyIncomeExpenseData(): Promise<ChartData> {
+  static getMonthlyIncomeExpenseData = cache(async (): Promise<ChartData> => {
     const session = await auth()
     if (!session?.user?.id) {
       throw new GenericError('User not authenticated')
@@ -45,7 +46,7 @@ export class ChartDataService {
     })
 
     return this.processMonthlyData(transactions, sixMonthsAgo, now)
-  }
+  })
 
   static async getCurrentYearIncomeExpenseData(): Promise<ChartData> {
     const session = await auth()

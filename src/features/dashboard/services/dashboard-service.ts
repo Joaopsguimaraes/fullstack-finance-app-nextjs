@@ -2,6 +2,7 @@ import { GenericError, getCurrentMonthForAPI } from '@/helpers'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import type { Transactions } from '@/lib/schemas'
+import { cache } from 'react'
 import type { DashboardStats, DashboardTransaction } from '../types'
 import { ChartDataService, type MonthlyData } from './chart-data-service'
 
@@ -49,7 +50,9 @@ export class DashboardService {
     })) as Transactions[]
   }
 
-  static calculateStats(transactions: Transactions[]): DashboardStats[] {
+  static calculateStats(
+    transactions: Transactions[]
+  ): Omit<DashboardStats, 'iconName'>[] {
     const totalIncome = transactions
       .filter(t => t.type === 'INCOME')
       .reduce((sum, t) => sum + parseFloat(t.amount), 0)
@@ -68,7 +71,6 @@ export class DashboardService {
           style: 'currency',
           currency: 'USD',
         }).format(totalBalance),
-        icon: null,
       },
       {
         title: 'Monthly Income',
@@ -76,7 +78,6 @@ export class DashboardService {
           style: 'currency',
           currency: 'USD',
         }).format(totalIncome),
-        icon: null,
       },
       {
         title: 'Monthly Expenses',
@@ -84,12 +85,10 @@ export class DashboardService {
           style: 'currency',
           currency: 'USD',
         }).format(totalExpenses),
-        icon: null,
       },
       {
         title: 'Savings Rate',
         value: `${savingsRate.toFixed(1)}%`,
-        icon: null,
       },
     ]
   }
@@ -97,7 +96,7 @@ export class DashboardService {
   static transformToRecentTransactions(
     transactions: Transactions[],
     limit = 5
-  ): DashboardTransaction[] {
+  ): Omit<DashboardTransaction, 'iconName'>[] {
     return transactions.slice(0, limit).map(transaction => ({
       id: transaction.id || '',
       description: transaction.description,
@@ -111,25 +110,24 @@ export class DashboardService {
         typeof transaction.date === 'string'
           ? transaction.date
           : transaction.date.toISOString(),
-      icon: null,
     }))
   }
 
-  static async getDashboardData(): Promise<{
+  static getDashboardData = cache(async (): Promise<{
     transactions: Transactions[]
-    stats: DashboardStats[]
-    recentTransactions: DashboardTransaction[]
+    stats: Omit<DashboardStats, 'iconName'>[]
+    recentTransactions: Omit<DashboardTransaction, 'iconName'>[]
     chartData: MonthlyData[]
-  }> {
+  }> => {
     try {
       const [transactions, chartDataResult] = await Promise.all([
-        this.getCurrentMonthTransactions(),
+        DashboardService.getCurrentMonthTransactions(),
         ChartDataService.getMonthlyIncomeExpenseData(),
       ])
 
-      const stats = this.calculateStats(transactions)
+      const stats = DashboardService.calculateStats(transactions)
       const recentTransactions =
-        this.transformToRecentTransactions(transactions)
+        DashboardService.transformToRecentTransactions(transactions)
 
       return {
         transactions,
@@ -149,34 +147,30 @@ export class DashboardService {
 
       return {
         transactions: [],
-        stats: this.getEmptyStats(),
+        stats: DashboardService.getEmptyStats(),
         recentTransactions: [],
         chartData: [],
       }
     }
-  }
+  })
 
-  private static getEmptyStats(): DashboardStats[] {
+  private static getEmptyStats(): Omit<DashboardStats, 'iconName'>[] {
     return [
       {
         title: 'Total Balance',
         value: '$0.00',
-        icon: null,
       },
       {
         title: 'Monthly Income',
         value: '$0.00',
-        icon: null,
       },
       {
         title: 'Monthly Expenses',
         value: '$0.00',
-        icon: null,
       },
       {
         title: 'Savings Rate',
         value: '0.0%',
-        icon: null,
       },
     ]
   }

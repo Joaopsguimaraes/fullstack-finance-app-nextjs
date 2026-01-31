@@ -15,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { format } from 'date-fns'
 import { CalendarIcon, Search, X } from 'lucide-react'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
@@ -60,12 +59,19 @@ function FilterTransactionsComponent({
 
   const handleDateChange = useCallback(
     (type: 'start' | 'end', date: Date | undefined) => {
+      const formatDateToISO = (d: Date) => {
+        const year = d.getFullYear()
+        const month = String(d.getMonth() + 1).padStart(2, '0')
+        const day = String(d.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+
       if (type === 'start') {
         setStartDate(date)
-        onFiltersChange({ startDate: date ? format(date, 'yyyy-MM-dd') : null })
+        onFiltersChange({ startDate: date ? formatDateToISO(date) : null })
       } else {
         setEndDate(date)
-        onFiltersChange({ endDate: date ? format(date, 'yyyy-MM-dd') : null })
+        onFiltersChange({ endDate: date ? formatDateToISO(date) : null })
       }
     },
     [onFiltersChange]
@@ -153,7 +159,13 @@ function FilterTransactionsComponent({
               className='w-[140px] justify-start text-left font-normal'
             >
               <CalendarIcon className='mr-2 h-4 w-4' />
-              {startDate ? format(startDate, 'MMM dd, yyyy') : 'Start Date'}
+              {startDate
+                ? startDate.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: '2-digit',
+                    year: 'numeric',
+                  })
+                : 'Start Date'}
             </Button>
           </PopoverTrigger>
           <PopoverContent className='w-auto p-0' align='start'>
@@ -173,7 +185,13 @@ function FilterTransactionsComponent({
               className='w-[140px] justify-start text-left font-normal'
             >
               <CalendarIcon className='mr-2 h-4 w-4' />
-              {endDate ? format(endDate, 'MMM dd, yyyy') : 'End Date'}
+              {endDate
+                ? endDate.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: '2-digit',
+                    year: 'numeric',
+                  })
+                : 'End Date'}
             </Button>
           </PopoverTrigger>
           <PopoverContent className='w-auto p-0' align='start'>

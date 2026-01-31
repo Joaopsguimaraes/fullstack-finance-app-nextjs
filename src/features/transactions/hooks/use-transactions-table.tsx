@@ -1,5 +1,4 @@
 import type { Transaction } from '@/lib/schemas'
-import { format } from 'date-fns'
 import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react'
 import { useCallback } from 'react'
 
@@ -27,10 +26,12 @@ export function useTransactionsTable() {
   }, [])
 
   const formatDateDisplay = useCallback((date: string | Date) => {
-    return format(
-      typeof date === 'string' ? new Date(date) : date,
-      'dd MM, yyyy'
-    )
+    const dateObj = typeof date === 'string' ? new Date(date) : date
+    return dateObj.toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    })
   }, [])
 
   return {

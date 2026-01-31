@@ -1,7 +1,7 @@
-/* eslint-disable sort-imports */
+ 
 import type { TransactionCategory } from '@/lib/schemas'
 
-import { getIcon, type IconName } from '../constants/icons'
+import { type IconName } from '../constants/icons'
 import { type DashboardStats, type DashboardTransaction } from '../types'
 
 interface RawStatsData {
@@ -54,8 +54,7 @@ export function transformStatsData(rawData: RawStatsData[]): DashboardStats[] {
   return rawData.map(item => ({
     title: item.title,
     value: item.value,
-    change: item.change,
-    icon: getIcon(item.iconName),
+    iconName: item.iconName,
   }))
 }
 
@@ -69,24 +68,24 @@ export function transformTransactionData(
     type: item.type,
     category: item.category,
     date: item.date,
-    icon: getIcon(item.iconName),
+    iconName: item.iconName,
   }))
 }
 
 export function transformApiStatsData(
-  statsData: Omit<DashboardStats, 'icon'>[]
+  statsData: Omit<DashboardStats, 'iconName'>[]
 ): DashboardStats[] {
   return statsData.map(stat => ({
     ...stat,
-    icon: getIcon(getStatIcon(stat.title)),
+    iconName: getStatIcon(stat.title),
   }))
 }
 
 export function transformApiTransactionData(
-  transactionsData: Omit<DashboardTransaction, 'icon'>[]
+  transactionsData: Omit<DashboardTransaction, 'iconName'>[]
 ): DashboardTransaction[] {
   return transactionsData.map(transaction => ({
     ...transaction,
-    icon: getIcon(getCategoryIcon(transaction.category)),
+    iconName: getCategoryIcon(transaction.category),
   }))
 }

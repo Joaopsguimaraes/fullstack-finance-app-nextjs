@@ -1,7 +1,11 @@
+'use client'
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { memo } from 'react'
+import { getIcon } from '../constants/icons'
 import { type StatCardProps } from '../types'
 
-export function StatCard({ title, value, icon }: StatCardProps) {
+function StatCardComponent({ title, value, iconName }: StatCardProps) {
   return (
     <Card className='bg-card border-border'>
       <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
@@ -9,7 +13,7 @@ export function StatCard({ title, value, icon }: StatCardProps) {
           {title}
         </CardTitle>
         <div className='flex h-8 w-8 items-center justify-center rounded-full'>
-          {icon}
+          {getIcon(iconName)}
         </div>
       </CardHeader>
       <CardContent>
@@ -18,3 +22,5 @@ export function StatCard({ title, value, icon }: StatCardProps) {
     </Card>
   )
 }
+
+export const StatCard = memo(StatCardComponent)

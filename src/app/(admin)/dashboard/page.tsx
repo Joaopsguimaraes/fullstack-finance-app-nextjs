@@ -1,29 +1,30 @@
-import {
-  DashboardService,
-  transformApiStatsData,
-  transformApiTransactionData,
-} from '@/features/dashboard'
-import dynamic from 'next/dynamic'
+import { ChartAsync } from '@/features/dashboard/components/chart-async'
+import { ChartSkeleton } from '@/features/dashboard/components/chart-skeleton'
+import { DashboardHeader } from '@/features/dashboard/components/dashboard-header'
+import { RecentTransactionsAsync } from '@/features/dashboard/components/recent-transactions-async'
+import { RecentTransactionsSkeleton } from '@/features/dashboard/components/recent-transactions-skeleton'
+import { StatCardsAsync } from '@/features/dashboard/components/stat-cards-async'
+import { StatCardsSkeleton } from '@/features/dashboard/components/stat-cards-skeleton'
+import { Suspense } from 'react'
 
-const Dashboard = dynamic(() =>
-  import('@/features/dashboard').then(mod => ({
-    default: mod.Dashboard,
-  }))
-)
-
-export default async function DashboardPage() {
-  const dashboardData = await DashboardService.getDashboardData()
-
-  const stats = transformApiStatsData(dashboardData.stats)
-  const recentTransactions = transformApiTransactionData(
-    dashboardData.recentTransactions
-  )
-
+export default function DashboardPage() {
   return (
-    <Dashboard
-      stats={stats}
-      recentTransactions={recentTransactions}
-      chartData={dashboardData.chartData}
-    />
+    <div className='space-y-6'>
+      <DashboardHeader />
+
+      <Suspense fallback={<StatCardsSkeleton />}>
+        <StatCardsAsync />
+      </Suspense>
+
+      <div className='grid gap-6 md:grid-cols-2'>
+        <Suspense fallback={<ChartSkeleton />}>
+          <ChartAsync />
+        </Suspense>
+
+        <Suspense fallback={<RecentTransactionsSkeleton />}>
+          <RecentTransactionsAsync />
+        </Suspense>
+      </div>
+    </div>
   )
 }
